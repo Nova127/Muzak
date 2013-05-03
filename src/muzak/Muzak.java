@@ -33,6 +33,7 @@ public class Muzak extends Application
         ResourceBundle res = ResourceBundle.getBundle("bundles.MainWindowTitles", controller.getLocale());
         
         Scene scene = new Scene( createMainLayout(res) );
+        scene.getStylesheets().add(getClass().getResource("styles/toolbar.css").toExternalForm());
         stage.setScene(scene);
         
         Rectangle2D screen = Screen.getPrimary().getVisualBounds();
@@ -40,6 +41,8 @@ public class Muzak extends Application
         stage.setY(screen.getHeight() / 8);
         stage.setWidth(0.75 * screen.getWidth());
         stage.setHeight(0.75 * screen.getHeight());
+        
+        controller.setMainWindow(stage);
         
         stage.show();
     }
@@ -158,6 +161,8 @@ public class Muzak extends Application
         toolsLayout.setPadding(new Insets(10.0));
         toolsLayout.setSpacing(10.0);
         toolsLayout.setStyle("-fx-border-style: solid; -fx-border-color: black;");
+        toolsLayout.setAlignment(Pos.CENTER_LEFT);
+        toolsLayout.getStyleClass().setAll("segmented-button-bar");
         
         TextField searchTextField = new TextField();
         
@@ -178,9 +183,43 @@ public class Muzak extends Application
             }
         });
         
+        EventHandler<ActionEvent> handler = new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle(ActionEvent event)
+            {
+                controller.handleButtonAction(event);
+            }
+            
+        };
+        
+        Button addArtist = new Button();
+        addArtist.setGraphic(new ImageView(new Image("file:resources/icons/vinyl_red.png")));
+        //addArtist.setStyle("-fx-background-color: transparent; -fx-border-style: solid; -fx-border-color: black;");
+        addArtist.setId("AddArtistRequest");
+        addArtist.setOnAction(handler);
+        addArtist.setMinSize(27, 27);
+        addArtist.setMaxSize(addArtist.getMinWidth(), addArtist.getMinHeight());
+        
+        Button addRelease = new Button();
+        addRelease.setGraphic(new ImageView(new Image("file:resources/icons/vinyl_blue.png")));
+        addRelease.setStyle("-fx-background-color: transparent; -fx-border-style: solid; -fx-border-color: black;");
+        addRelease.setId("AddReleaseRequest");
+        addRelease.setOnAction(handler);
+        addRelease.setMinSize(27, 27);
+        addRelease.setMaxSize(addRelease.getMinWidth(), addRelease.getMinHeight());
+        
+        Button addTracks = new Button();
+        addTracks.setGraphic(new ImageView(new Image("file:resources/icons/vinyl_green.png")));
+        addTracks.setStyle("-fx-background-color: transparent; -fx-border-style: solid; -fx-border-color: black;");
+        addTracks.setId("AddTracksRequest");
+        addTracks.setOnAction(handler);
+        addTracks.setMinSize(27, 27);
+        addTracks.setMaxSize(addTracks.getMinWidth(), addTracks.getMinHeight());
+        
         Region stretcher = new Region();
         HBox.setHgrow(stretcher, Priority.ALWAYS);
-        toolsLayout.getChildren().addAll(searchTextField, searchFilter, searchButton, stretcher);
+        toolsLayout.getChildren().addAll(searchTextField, searchFilter, searchButton, stretcher, addArtist, addRelease, addTracks);
         
         return toolsLayout;
     }
@@ -208,6 +247,7 @@ public class Muzak extends Application
         Text status = new Text("This is status bar.");
         bottomLayout.getChildren().add(status);
         root.setBottom(bottomLayout);
+        root.setId("background");
         
         return root;
     }
