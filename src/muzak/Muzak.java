@@ -23,6 +23,7 @@ import javafx.stage.Stage;
 
 public class Muzak extends Application
 {
+	/* Kommentti */
     private MainControl controller = new MainControl();
     Button searchButton = null;
     ComboBox<String> searchFilter = null;
