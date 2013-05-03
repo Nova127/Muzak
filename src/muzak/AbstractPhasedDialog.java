@@ -34,7 +34,7 @@ public abstract class AbstractPhasedDialog extends Stage
         
         ResourceBundle res = ResourceBundle.getBundle("bundles.AbstractPhasedDialog", locale);
         
-        setScene(new Scene(createMainLayout(res)));
+        setScene(new Scene(createBaseLayout(res)));
         
         createEventHandlers();
     }
@@ -81,6 +81,8 @@ public abstract class AbstractPhasedDialog extends Stage
     protected void addPhase(Pane p)
     {
         m_phases.add(p);
+        setContentPane(m_phases.get(m_phaseIndex));
+        permitNavigation();
     }
     
 //    private Pane createPhase(String resource, Locale locale, BuilderFactory builder)
@@ -239,7 +241,7 @@ public abstract class AbstractPhasedDialog extends Stage
             }
         });
     }
-    private BorderPane createMainLayout(ResourceBundle res)
+    private BorderPane createBaseLayout(ResourceBundle res)
     {
         HBox buttonsLayout = new HBox(5.0);
         buttonsLayout.setPadding(new Insets(5.0));
