@@ -7,6 +7,22 @@
     -fx-background-color: -mid-gray;
 }
 
+.main-window-toolbar
+{
+	-fx-background-color: transparent;
+	-fx-border-style: solid;
+	-fx-border-color: black;
+	-fx-padding: 10.0;
+	-fx-spacing: 10.0;
+	-fx-alignment: center-left;
+}
+
+.main-window-toolbar .button #SearchRequest 
+{
+	-fx-min-width: 150px;
+}
+
+/*
 .segmented-button-bar .button {
     -fx-background-color:
         -darkest-black,
@@ -33,3 +49,4 @@
         rgb(55, 57, 58),
         linear-gradient(to top, -light-black 2%, -dark-black 98%);
 }
+*/

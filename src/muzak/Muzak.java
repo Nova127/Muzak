@@ -23,7 +23,6 @@ import javafx.stage.Stage;
 
 public class Muzak extends Application
 {
-	/* Kommentti */
     private MainControl controller = new MainControl();
     Button searchButton = null;
     ComboBox<String> searchFilter = null;
@@ -159,21 +158,23 @@ public class Muzak extends Application
     private HBox createToolBar(ResourceBundle res)
     {
         HBox toolsLayout = new HBox();
-        toolsLayout.setPadding(new Insets(10.0));
-        toolsLayout.setSpacing(10.0);
-        toolsLayout.setStyle("-fx-border-style: solid; -fx-border-color: black;");
-        toolsLayout.setAlignment(Pos.CENTER_LEFT);
-        toolsLayout.getStyleClass().setAll("segmented-button-bar");
+        //toolsLayout.setPadding(new Insets(10.0));
+        //toolsLayout.setSpacing(10.0);
+        //toolsLayout.setStyle("-fx-border-style: solid; -fx-border-color: black;");
+        //toolsLayout.setAlignment(Pos.CENTER_LEFT);
+        toolsLayout.getStyleClass().setAll("main-window-toolbar");
         
         TextField searchTextField = new TextField();
         
-        ObservableList<String> options = FXCollections.observableArrayList();
-        options.addAll(res.getString("SEEK_EVERYTHING"), res.getString("SEEK_ARTISTS"), res.getString("SEEK_RELEASES"), res.getString("SEEK_TRACKS"));
-        
         searchFilter = new ComboBox<>();
-        searchFilter.setItems(options);
+        searchFilter.setItems(FXCollections.observableArrayList(res.getString("SEEK_NOFILT"),
+                                                                res.getString("SEEK_ARTISTS"),
+                                                                res.getString("SEEK_RELEASES"),
+                                                                res.getString("SEEK_TRACKS")));
+        searchFilter.setValue(res.getString("SEEK_NOFILT"));
         
         searchButton = new Button(res.getString("SEARCH"));
+        searchButton.setMinWidth(80.0);
         searchButton.setId("SearchRequest");
         searchButton.setOnAction(new EventHandler<ActionEvent>()
         {
@@ -194,6 +195,23 @@ public class Muzak extends Application
             
         };
         
+        StackPane base = new StackPane();
+        
+        ImageView iv1 = new ImageView(new Image("file:resources/icons/vinyl-icon_48.png"));
+//        iv1.setFitWidth(48.0);
+//        iv1.setPreserveRatio(true);
+//        iv1.setSmooth(true);
+        iv1.setCache(true);
+        
+        ImageView iv2 = new ImageView(new Image("file:resources/icons/plus2_256.png"));
+        iv2.setFitWidth(24.0);
+        iv2.setPreserveRatio(true);
+        iv2.setSmooth(true);
+        iv2.setCache(true);
+        
+        base.getChildren().addAll(iv1, iv2);
+        base.setAlignment(Pos.BOTTOM_RIGHT);
+        
         Button addArtist = new Button();
         addArtist.setGraphic(new ImageView(new Image("file:resources/icons/vinyl_red.png")));
         //addArtist.setStyle("-fx-background-color: transparent; -fx-border-style: solid; -fx-border-color: black;");
@@ -203,11 +221,11 @@ public class Muzak extends Application
         addArtist.setMaxSize(addArtist.getMinWidth(), addArtist.getMinHeight());
         
         Button addRelease = new Button();
-        addRelease.setGraphic(new ImageView(new Image("file:resources/icons/vinyl_blue.png")));
+        addRelease.setGraphic(new ImageView(new Image("file:resources/icons/addRelease64x64.png")));
         addRelease.setStyle("-fx-background-color: transparent; -fx-border-style: solid; -fx-border-color: black;");
         addRelease.setId("AddReleaseRequest");
         addRelease.setOnAction(handler);
-        addRelease.setMinSize(27, 27);
+        //addRelease.setMinSize(27, 27);
         addRelease.setMaxSize(addRelease.getMinWidth(), addRelease.getMinHeight());
         
         Button addTracks = new Button();
@@ -220,7 +238,7 @@ public class Muzak extends Application
         
         Region stretcher = new Region();
         HBox.setHgrow(stretcher, Priority.ALWAYS);
-        toolsLayout.getChildren().addAll(searchTextField, searchFilter, searchButton, stretcher, addArtist, addRelease, addTracks);
+        toolsLayout.getChildren().addAll(searchTextField, searchFilter, searchButton, stretcher, base, addArtist, addRelease, addTracks);
         
         return toolsLayout;
     }
@@ -260,7 +278,7 @@ public class Muzak extends Application
         ResourceBundle res = ResourceBundle.getBundle("bundles.MainWindowTitles", controller.getLocale());
         
         ObservableList<String> options = FXCollections.observableArrayList();
-        options.addAll(res.getString("SEEK_EVERYTHING"), res.getString("SEEK_ARTISTS"), res.getString("SEEK_RELEASES"), res.getString("SEEK_TRACKS"));
+        options.addAll(res.getString("SEEK_NOFILT"), res.getString("SEEK_ARTISTS"), res.getString("SEEK_RELEASES"), res.getString("SEEK_TRACKS"));
         
         searchFilter.setItems(options);
         
