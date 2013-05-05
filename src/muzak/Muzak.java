@@ -6,33 +6,55 @@ import java.util.ResourceBundle;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.event.EventType;
+import javafx.event.*;
 import javafx.geometry.*;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class Muzak extends Application
 {
-    private MainControl controller = new MainControl();
-    Button searchButton = null;
-    ComboBox<String> searchFilter = null;
-    HBox menuBarLayout = null;
+    private MainControl m_controller = new MainControl();
+    
+    private Scene scene = null;
+    
+    private TextField               ui_searchField      = null;
+    private Button                  ui_searchButton     = null;
+    private ComboBox<KeyValuePair>  ui_searchFilter     = null;
+    private HBox                    ui_menuBarLayout    = null;
+    
+    private class KeyValuePair
+    {
+        private String m_key;
+        private String m_value;
+        
+        KeyValuePair(String key, String value)
+        {
+            m_key = key; m_value = value; 
+        }
+        
+        public String getKey()   { return m_key; }
+        //public String getValue() { return m_value; };
+        public String toString() { return m_value; };
+    }
+    
     @Override
     public void start(Stage stage) throws Exception
     {
-        ResourceBundle res = ResourceBundle.getBundle("bundles.MainWindowTitles", controller.getLocale());
+        ResourceBundle res = ResourceBundle.getBundle("bundles.MainWindowTitles", m_controller.getLocale());
         
-        Scene scene = new Scene( createMainLayout(res) );
+        scene = new Scene( createMainLayout(res) );
         scene.getStylesheets().add(getClass().getResource("styles/toolbar.css").toExternalForm());
         stage.setScene(scene);
         
@@ -42,7 +64,7 @@ public class Muzak extends Application
         stage.setWidth(0.75 * screen.getWidth());
         stage.setHeight(0.75 * screen.getHeight());
         
-        controller.setMainWindow(stage);
+        m_controller.setMainWindow(stage);
         
         stage.show();
     }
@@ -54,7 +76,7 @@ public class Muzak extends Application
             @Override
             public void handle(ActionEvent event)
             {
-                controller.handleMenuAction(event);
+                m_controller.handleMenuAction(event);
             }
             
         };
@@ -124,7 +146,7 @@ public class Muzak extends Application
             @Override
             public void handle(ActionEvent event)
             {
-                if(controller.changeToFinnish())
+                if(m_controller.changeToFinnish())
                 {
                     reloadVisibles();
                 }
@@ -140,52 +162,46 @@ public class Muzak extends Application
             @Override
             public void handle(ActionEvent event)
             {
-                if(controller.changeToEnglish())
+                if(m_controller.changeToEnglish())
                 {
                     reloadVisibles();
                 }
             }
         });
         
-        menuBarLayout = new HBox();
-        menuBarLayout.setSpacing(10.0);
-        menuBarLayout.setStyle("-fx-background-color: -fx-selection-bar;");
-        menuBarLayout.getChildren().addAll(createMenuBar(res), stretcher, lang_fiButton, lang_enButton);
+        ui_menuBarLayout = new HBox();
+        ui_menuBarLayout.setSpacing(10.0);
+        ui_menuBarLayout.setStyle("-fx-background-color: -fx-selection-bar;");
+        ui_menuBarLayout.getChildren().addAll(createMenuBar(res), stretcher, lang_fiButton, lang_enButton);
 
-        return menuBarLayout;
+        return ui_menuBarLayout;
     }
     
     private HBox createToolBar(ResourceBundle res)
     {
-        HBox toolsLayout = new HBox();
-        //toolsLayout.setPadding(new Insets(10.0));
-        //toolsLayout.setSpacing(10.0);
-        //toolsLayout.setStyle("-fx-border-style: solid; -fx-border-color: black;");
-        //toolsLayout.setAlignment(Pos.CENTER_LEFT);
-        toolsLayout.getStyleClass().setAll("main-window-toolbar");
+        ui_searchField = new TextField();
         
-        TextField searchTextField = new TextField();
+        ui_searchFilter = new ComboBox<>();
+        ui_searchFilter.setItems(FXCollections.observableArrayList(new KeyValuePair("SEEK_NOFILT",     res.getString("SEEK_NOFILT")),
+                                                                   new KeyValuePair("SEEK_ARTISTS",    res.getString("SEEK_ARTISTS")),
+                                                                   new KeyValuePair("SEEK_RELEASES",   res.getString("SEEK_RELEASES")),
+                                                                   new KeyValuePair("SEEK_TRACKS",     res.getString("SEEK_TRACKS"))));
+        ui_searchFilter.getSelectionModel().selectFirst();
         
-        searchFilter = new ComboBox<>();
-        searchFilter.setItems(FXCollections.observableArrayList(res.getString("SEEK_NOFILT"),
-                                                                res.getString("SEEK_ARTISTS"),
-                                                                res.getString("SEEK_RELEASES"),
-                                                                res.getString("SEEK_TRACKS")));
-        searchFilter.setValue(res.getString("SEEK_NOFILT"));
-        
-        searchButton = new Button(res.getString("SEARCH"));
-        searchButton.setMinWidth(80.0);
-        searchButton.setId("SearchRequest");
-        searchButton.setOnAction(new EventHandler<ActionEvent>()
+        ui_searchButton = new Button(res.getString("SEARCH"));
+        ui_searchButton.setMinWidth(80.0);
+        ui_searchButton.setId("SearchRequest");
+        ui_searchButton.setOnAction(new EventHandler<ActionEvent>()
         {
             @Override
             public void handle(ActionEvent event)
             {
-                controller.handleButtonAction(event);
+                if(!ui_searchField.getText().isEmpty())
+                    m_controller.handleSearchAction(ui_searchField.getText(), ui_searchFilter.getValue().getKey());
             }
         });
         
-        EventHandler<ActionEvent> handler = new EventHandler<ActionEvent>()
+/*        EventHandler<ActionEvent> handler = new EventHandler<ActionEvent>()
         {
             @Override
             public void handle(ActionEvent event)
@@ -194,23 +210,6 @@ public class Muzak extends Application
             }
             
         };
-        
-        StackPane base = new StackPane();
-        
-        ImageView iv1 = new ImageView(new Image("file:resources/icons/vinyl-icon_48.png"));
-//        iv1.setFitWidth(48.0);
-//        iv1.setPreserveRatio(true);
-//        iv1.setSmooth(true);
-        iv1.setCache(true);
-        
-        ImageView iv2 = new ImageView(new Image("file:resources/icons/plus2_256.png"));
-        iv2.setFitWidth(24.0);
-        iv2.setPreserveRatio(true);
-        iv2.setSmooth(true);
-        iv2.setCache(true);
-        
-        base.getChildren().addAll(iv1, iv2);
-        base.setAlignment(Pos.BOTTOM_RIGHT);
         
         Button addArtist = new Button();
         addArtist.setGraphic(new ImageView(new Image("file:resources/icons/vinyl_red.png")));
@@ -235,13 +234,51 @@ public class Muzak extends Application
         addTracks.setOnAction(handler);
         addTracks.setMinSize(27, 27);
         addTracks.setMaxSize(addTracks.getMinWidth(), addTracks.getMinHeight());
-        
+        */
         Region stretcher = new Region();
         HBox.setHgrow(stretcher, Priority.ALWAYS);
-        toolsLayout.getChildren().addAll(searchTextField, searchFilter, searchButton, stretcher, base, addArtist, addRelease, addTracks);
+        
+        HBox toolsLayout = new HBox();
+        toolsLayout.getStyleClass().setAll("main-window-toolbar");
+        toolsLayout.getChildren().addAll(ui_searchField, ui_searchFilter, ui_searchButton, stretcher);
         
         return toolsLayout;
     }
+    
+/*    private StackPane createToolButton(Image img)
+    {
+        StackPane base = new StackPane();
+        ImageView iv1 = new ImageView(new Image("file:resources/icons/vinyl-icon_48.png"));
+        iv1.setCache(true);
+        
+        ImageView iv2 = new ImageView(new Image("file:resources/icons/plus2_256.png"));
+        iv2.setFitWidth(24.0);
+        iv2.setPreserveRatio(true);
+        iv2.setSmooth(true);
+        iv2.setCache(true);
+        
+        base.getChildren().addAll(iv1, iv2);
+        base.setAlignment(Pos.BOTTOM_RIGHT);
+        
+        base.setOnMouseEntered(new EventHandler<MouseEvent>()
+        {
+            @Override
+            public void handle(MouseEvent arg0)
+            {
+                scene.setCursor(Cursor.HAND);
+            }
+        });
+        
+        base.setOnMouseExited(new EventHandler<MouseEvent>()
+        {
+            @Override
+            public void handle(MouseEvent arg0)
+            {
+                scene.setCursor(Cursor.DEFAULT);
+            }
+        });
+        return base;
+    }*/
     
     private BorderPane createMainLayout(ResourceBundle res)
     {
@@ -275,17 +312,20 @@ public class Muzak extends Application
     {
         System.out.println("Reloading Visibles...");
         
-        ResourceBundle res = ResourceBundle.getBundle("bundles.MainWindowTitles", controller.getLocale());
+        ResourceBundle res = ResourceBundle.getBundle("bundles.MainWindowTitles", m_controller.getLocale());
         
-        ObservableList<String> options = FXCollections.observableArrayList();
-        options.addAll(res.getString("SEEK_NOFILT"), res.getString("SEEK_ARTISTS"), res.getString("SEEK_RELEASES"), res.getString("SEEK_TRACKS"));
+        int selected = ui_searchFilter.getSelectionModel().getSelectedIndex();
         
-        searchFilter.setItems(options);
+        ui_searchFilter.setItems(FXCollections.observableArrayList(new KeyValuePair("SEEK_NOFILT",     res.getString("SEEK_NOFILT")),
+                                                                   new KeyValuePair("SEEK_ARTISTS",    res.getString("SEEK_ARTISTS")),
+                                                                   new KeyValuePair("SEEK_RELEASES",   res.getString("SEEK_RELEASES")),
+                                                                   new KeyValuePair("SEEK_TRACKS",     res.getString("SEEK_TRACKS"))));
+        ui_searchFilter.getSelectionModel().select(selected);
         
-        searchButton.setText(res.getString("SEARCH"));
+        ui_searchButton.setText(res.getString("SEARCH"));
         
-        menuBarLayout.getChildren().remove(0);
-        menuBarLayout.getChildren().add(0, createMenuBar(res));
+        ui_menuBarLayout.getChildren().remove(0);
+        ui_menuBarLayout.getChildren().add(0, createMenuBar(res));
     }
     
     public static void main(String[] args)

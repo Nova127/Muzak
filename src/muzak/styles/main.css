@@ -1,0 +1,18 @@
+
+.main-pane
+{
+	-fx-background-color: transparent;
+	-fx-border-style: solid;
+	-fx-border-color: black;
+	-fx-padding: 10.0;
+	-fx-spacing: 10.0;
+	-fx-alignment: center-left;
+}
+
+.dialog-phase
+{
+	-fx-background-color: transparent;
+	-fx-border-style: solid;
+	-fx-border-color: black;
+	-fx-padding: 10.0;
+}

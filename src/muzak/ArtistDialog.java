@@ -1,11 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package muzak;
 
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.ResourceBundle;
+
+import javafx.collections.FXCollections;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -22,18 +22,14 @@ import javafx.scene.layout.Region;
 import javafx.scene.text.Text;
 import muzak.mycomp.TablessTextArea;
 
-/**
- *
- * @author Harri
- */
 public class ArtistDialog extends AbstractPhasedDialog
 {
-    private ToggleGroup typeOptions;
-    private TextField nameTextField;
-    private TextField aliasesTextField;
-    private ComboBox<String> originComboBox;
-    private ComboBox<String> foundedComboBox;
-    private TablessTextArea commentTextArea;
+    private ToggleGroup         ui_typeOptions;
+    private TextField           ui_nameField;
+    private TextField           ui_aliasField;
+    private ComboBox<String>    ui_originChoice;
+    private ComboBox<String>    ui_foundedChoice;
+    private TablessTextArea     ui_commentArea;
     
     public ArtistDialog(final Locale locale)
     {
@@ -42,71 +38,119 @@ public class ArtistDialog extends AbstractPhasedDialog
         addPhase(createArtistForm(res));
     }
 
+    public void populateOriginList(ArrayList<String> origins)
+    {
+        ui_originChoice.setItems(FXCollections.observableList(origins));
+    }
+    
+    public void populateFoundedList(int first, int last)
+    {
+        if(first > last)
+        {
+            int tmp = first;
+            first = last;
+            last = tmp;
+        }
+        
+        ArrayList<String> list = new ArrayList<>();
+        for(int i = last; i >= first; --i)
+            list.add(Integer.toString(i));
+        
+        ui_foundedChoice.setItems(FXCollections.observableList(list));
+    }
+    
+    public String getType()
+    {
+        return ((RadioButton)ui_typeOptions.getSelectedToggle()).getId();
+    }
+    
+    public String getName()
+    {
+        return ui_nameField.getText();
+    }
+    
+    public String getAliases()
+    {
+        return ui_aliasField.getText();
+    }
+    
+    public String getOrigin()
+    {
+        return ui_originChoice.getSelectionModel().getSelectedItem();
+    }
+    
+    public String getFounded()
+    {
+        return ui_foundedChoice.getSelectionModel().getSelectedItem();
+    }
+    
+    public String getComment()
+    {
+        return ui_commentArea.getText();
+    }
+    
     @Override
-    protected void proceed() 
+    protected void proceed()
     {
     }
 
     @Override
-    protected void rollBack() 
+    protected void rollBack()
     {
     }
     
     private GridPane createArtistForm(ResourceBundle res)
     {
+        RadioButton artistOption = new RadioButton(res.getString("ARTIST"));
+        artistOption.setId("ARTIST");
+        RadioButton bandOption = new RadioButton(res.getString("BAND"));
+        bandOption.setId("BAND");
+        bandOption.setSelected(true);
+        RadioButton otherOption = new RadioButton(res.getString("OTHER"));
+        otherOption.setId("OTHER");
+        ui_typeOptions = new ToggleGroup();
+        artistOption.setToggleGroup(ui_typeOptions);
+        bandOption.setToggleGroup(ui_typeOptions);
+        otherOption.setToggleGroup(ui_typeOptions);
+        
+        HBox optionsLayout = new HBox(15.0);
+        optionsLayout.getChildren().addAll(bandOption, artistOption, otherOption);
+        
+        ui_nameField = new TextField();
+        ui_aliasField = new TextField();
+        ui_originChoice = new ComboBox<>();
+        ui_foundedChoice = new ComboBox<>();
+        ui_commentArea = new TablessTextArea();
+        ui_commentArea.setPrefHeight(80.0);
+        ui_commentArea.setWrapText(true);
+        
         GridPane pane = new GridPane();
+        pane.getStyleClass().setAll("dialog-phase");
         pane.setHgap(10.0);
         pane.setVgap(10.0);
-        pane.setPadding(new Insets(10.0));
         
         ColumnConstraints col0 = new ColumnConstraints();
         col0.setPercentWidth(20.0);
         col0.setHalignment(HPos.RIGHT);
-        
         pane.getColumnConstraints().add(col0);
-        
-        Region stretcher = new Region();
-        HBox.setHgrow(stretcher, Priority.ALWAYS);
         
         pane.add(new Label(res.getString("TYPE")), 0, 0);
         pane.add(new Label(res.getString("NAME")), 0, 1);
         pane.add(new Label(res.getString("ALIASES")), 0, 2);
-        pane.add(stretcher, 0, 3);
+        pane.add(UIUtils.getHStretcher(), 0, 3);
         pane.add(new Label(res.getString("ORIGIN")), 0, 4);
         pane.add(new Label(res.getString("FOUNDED")), 0, 5);
         pane.add(new Label(res.getString("COMMENT")), 0, 6);
         pane.add(new Button("Discogs"), 0, 7);
-        
-        HBox optionsLayout = new HBox(15.0);
-        RadioButton artistOption = new RadioButton(res.getString("ARTIST"));
-        RadioButton bandOption = new RadioButton(res.getString("BAND"));
-        bandOption.setSelected(true);
-        RadioButton otherOption = new RadioButton(res.getString("OTHER"));
-        typeOptions = new ToggleGroup();
-        artistOption.setToggleGroup(typeOptions);
-        bandOption.setToggleGroup(typeOptions);
-        otherOption.setToggleGroup(typeOptions);
-        optionsLayout.getChildren().addAll(bandOption, artistOption, otherOption);
-        
-        nameTextField = new TextField();
-        aliasesTextField = new TextField();
-        originComboBox = new ComboBox<>();
-        foundedComboBox = new ComboBox<>();
-        commentTextArea = new TablessTextArea();
-        commentTextArea.setPrefHeight(80.0);
-        commentTextArea.setWrapText(true);
-        
-        Region stretcher2 = new Region();
-        HBox.setHgrow(stretcher2, Priority.ALWAYS);
-        
+
         pane.add(optionsLayout, 1, 0);
-        pane.add(nameTextField, 1, 1);
-        pane.add(aliasesTextField, 1, 2);
+        pane.add(ui_nameField, 1, 1);
+        pane.add(ui_aliasField, 1, 2);
         pane.add(new Text(res.getString("ALIAS_GUIDE")), 1, 3);
-        pane.add(originComboBox, 1, 4);
-        pane.add(foundedComboBox, 1, 5);
-        pane.add(commentTextArea, 1, 6);
-        pane.add(stretcher2, 1, 7);
+        pane.add(ui_originChoice, 1, 4);
+        pane.add(ui_foundedChoice, 1, 5);
+        pane.add(ui_commentArea, 1, 6);
+        pane.add(UIUtils.getHStretcher(), 1, 7);      
         
         return pane;
     }

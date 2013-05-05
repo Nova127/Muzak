@@ -1,6 +1,10 @@
 package muzak;
 
+import java.util.Calendar;
 import java.util.Locale;
+
+import muzakModel.Artist;
+import muzakModel.MuzakDataModel;
 
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
@@ -10,13 +14,15 @@ import javafx.stage.Stage;
 
 public class MainControl
 {
+    private MuzakDataModel m_model;
     /* Initialize 'default' locale. */
-    private Locale locale = new Locale("fi");
+    private Locale m_locale = new Locale("fi");
     private Stage mainWindow;
     
     public MainControl()
     {
         super();
+        m_model = new MuzakDataModel();
     }
     
     public void setMainWindow(final Stage win)
@@ -26,7 +32,7 @@ public class MainControl
     
     public Locale getLocale()
     {
-        return this.locale;
+        return m_locale;
     }
     
     public boolean changeToFinnish()
@@ -43,11 +49,16 @@ public class MainControl
     {
         Locale other = new Locale(iso639code);
 
-        if(this.locale.getLanguage().equals(other.getLanguage())) return false;
+        if(this.m_locale.getLanguage().equals(other.getLanguage())) return false;
         
-        this.locale = other;
+        this.m_locale = other;
         
         return true;
+    }
+    
+    public void handleSearchAction(String searchString, String filter)
+    {
+        System.out.println("Search " + searchString + " from " + filter);
     }
     
     public void handleMenuAction(ActionEvent event)
@@ -127,13 +138,37 @@ public class MainControl
     
     private void showArtistDialog()
     {
-        ArtistDialog dialog = new ArtistDialog(getLocale());
+        ArtistDialog dialog = new ArtistDialog(m_locale);
         dialog.initModality(Modality.WINDOW_MODAL);
         dialog.initOwner(mainWindow);
         
+        dialog.populateOriginList(MuzakDataModel.getListOfCountries(m_locale));
+        
+        Calendar c = Calendar.getInstance(m_locale);
+        /* TODO: 1900 should be configurable value. */
+        dialog.populateFoundedList(1900, c.get(Calendar.YEAR));
+        
         if(dialog.execute())
         {
-            System.out.println("Dialog accepted!");
+            String type = dialog.getType();
+            String name = dialog.getName();
+            String aliasesString = dialog.getAliases();
+            String origin = dialog.getOrigin();
+            String founded = dialog.getFounded();
+            String comment = dialog.getComment();
+            
+            Artist artist = MuzakDataModel.createArtist();
+            artist.setType(type);
+            artist.setName(name);
+            artist.setTechName(name);
+            artist.setCountryCode(MuzakDataModel.mapCountryToCode(origin));
+            artist.setFounded(Integer.parseInt(founded));
+            artist.setComment(comment);
+            String[] aliases = aliasesString.split(";");
+            for(int i = 0; i < aliases.length; ++i)
+            {
+                artist.addAlias(aliases[i].trim());
+            }
         }
         else
             System.out.println("Dialog rejected!");
