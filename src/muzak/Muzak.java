@@ -31,23 +31,8 @@ public class Muzak extends Application
     
     private TextField               ui_searchField      = null;
     private Button                  ui_searchButton     = null;
-    private ComboBox<KeyValuePair>  ui_searchFilter     = null;
+    private ComboBox<KeyValueCombo> ui_searchFilter     = null;
     private HBox                    ui_menuBarLayout    = null;
-    
-    private class KeyValuePair
-    {
-        private String m_key;
-        private String m_value;
-        
-        KeyValuePair(String key, String value)
-        {
-            m_key = key; m_value = value; 
-        }
-        
-        public String getKey()   { return m_key; }
-        //public String getValue() { return m_value; };
-        public String toString() { return m_value; };
-    }
     
     @Override
     public void start(Stage stage) throws Exception
@@ -55,7 +40,7 @@ public class Muzak extends Application
         ResourceBundle res = ResourceBundle.getBundle("bundles.MainWindowTitles", m_controller.getLocale());
         
         scene = new Scene( createMainLayout(res) );
-        scene.getStylesheets().add(getClass().getResource("styles/toolbar.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("styles/main.css").toExternalForm());
         stage.setScene(scene);
         
         Rectangle2D screen = Screen.getPrimary().getVisualBounds();
@@ -182,10 +167,10 @@ public class Muzak extends Application
         ui_searchField = new TextField();
         
         ui_searchFilter = new ComboBox<>();
-        ui_searchFilter.setItems(FXCollections.observableArrayList(new KeyValuePair("SEEK_NOFILT",     res.getString("SEEK_NOFILT")),
-                                                                   new KeyValuePair("SEEK_ARTISTS",    res.getString("SEEK_ARTISTS")),
-                                                                   new KeyValuePair("SEEK_RELEASES",   res.getString("SEEK_RELEASES")),
-                                                                   new KeyValuePair("SEEK_TRACKS",     res.getString("SEEK_TRACKS"))));
+        ui_searchFilter.setItems(FXCollections.observableArrayList(new KeyValueCombo("SEEK_NOFILT",     res.getString("SEEK_NOFILT")),
+                                                                   new KeyValueCombo("SEEK_ARTISTS",    res.getString("SEEK_ARTISTS")),
+                                                                   new KeyValueCombo("SEEK_RELEASES",   res.getString("SEEK_RELEASES")),
+                                                                   new KeyValueCombo("SEEK_TRACKS",     res.getString("SEEK_TRACKS"))));
         ui_searchFilter.getSelectionModel().selectFirst();
         
         ui_searchButton = new Button(res.getString("SEARCH"));
@@ -239,7 +224,7 @@ public class Muzak extends Application
         HBox.setHgrow(stretcher, Priority.ALWAYS);
         
         HBox toolsLayout = new HBox();
-        toolsLayout.getStyleClass().setAll("main-window-toolbar");
+        toolsLayout.getStyleClass().setAll("main-pane");
         toolsLayout.getChildren().addAll(ui_searchField, ui_searchFilter, ui_searchButton, stretcher);
         
         return toolsLayout;
@@ -316,10 +301,10 @@ public class Muzak extends Application
         
         int selected = ui_searchFilter.getSelectionModel().getSelectedIndex();
         
-        ui_searchFilter.setItems(FXCollections.observableArrayList(new KeyValuePair("SEEK_NOFILT",     res.getString("SEEK_NOFILT")),
-                                                                   new KeyValuePair("SEEK_ARTISTS",    res.getString("SEEK_ARTISTS")),
-                                                                   new KeyValuePair("SEEK_RELEASES",   res.getString("SEEK_RELEASES")),
-                                                                   new KeyValuePair("SEEK_TRACKS",     res.getString("SEEK_TRACKS"))));
+        ui_searchFilter.setItems(FXCollections.observableArrayList(new KeyValueCombo("SEEK_NOFILT",     res.getString("SEEK_NOFILT")),
+                                                                   new KeyValueCombo("SEEK_ARTISTS",    res.getString("SEEK_ARTISTS")),
+                                                                   new KeyValueCombo("SEEK_RELEASES",   res.getString("SEEK_RELEASES")),
+                                                                   new KeyValueCombo("SEEK_TRACKS",     res.getString("SEEK_TRACKS"))));
         ui_searchFilter.getSelectionModel().select(selected);
         
         ui_searchButton.setText(res.getString("SEARCH"));

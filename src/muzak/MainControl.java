@@ -15,7 +15,9 @@ import javafx.stage.Stage;
 public class MainControl
 {
     private MuzakDataModel m_model;
+    private MuzakConfig m_config;
     /* Initialize 'default' locale. */
+    /* TODO: locale should be part of configurations. */
     private Locale m_locale = new Locale("fi");
     private Stage mainWindow;
     
@@ -23,6 +25,7 @@ public class MainControl
     {
         super();
         m_model = new MuzakDataModel();
+        m_config = new MuzakConfig();
     }
     
     public void setMainWindow(final Stage win)
@@ -138,22 +141,16 @@ public class MainControl
     
     private void showArtistDialog()
     {
-        ArtistDialog dialog = new ArtistDialog(m_locale);
+        ArtistDialog dialog = new ArtistDialog(m_locale, m_config);
         dialog.initModality(Modality.WINDOW_MODAL);
         dialog.initOwner(mainWindow);
-        
-        dialog.populateOriginList(MuzakDataModel.getListOfCountries(m_locale));
-        
-        Calendar c = Calendar.getInstance(m_locale);
-        /* TODO: 1900 should be configurable value. */
-        dialog.populateFoundedList(1900, c.get(Calendar.YEAR));
         
         if(dialog.execute())
         {
             String type = dialog.getType();
             String name = dialog.getName();
             String aliasesString = dialog.getAliases();
-            String origin = dialog.getOrigin();
+            String origin = dialog.getOriginCode();
             String founded = dialog.getFounded();
             String comment = dialog.getComment();
             
@@ -161,7 +158,7 @@ public class MainControl
             artist.setType(type);
             artist.setName(name);
             artist.setTechName(name);
-            artist.setCountryCode(MuzakDataModel.mapCountryToCode(origin));
+            artist.setCountryCode(origin);
             artist.setFounded(Integer.parseInt(founded));
             artist.setComment(comment);
             String[] aliases = aliasesString.split(";");

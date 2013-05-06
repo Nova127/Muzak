@@ -2,10 +2,12 @@
 package muzak;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -24,39 +26,21 @@ import muzak.mycomp.TablessTextArea;
 
 public class ArtistDialog extends AbstractPhasedDialog
 {
-    private ToggleGroup         ui_typeOptions;
-    private TextField           ui_nameField;
-    private TextField           ui_aliasField;
-    private ComboBox<String>    ui_originChoice;
-    private ComboBox<String>    ui_foundedChoice;
-    private TablessTextArea     ui_commentArea;
+    private ToggleGroup             ui_typeOptions;
+    private TextField               ui_nameField;
+    private TextField               ui_aliasField;
+    private ComboBox<KeyValueCombo> ui_originChoice;
+    private ComboBox<String>        ui_foundedChoice;
+    private TablessTextArea         ui_commentArea;
     
-    public ArtistDialog(final Locale locale)
+    public ArtistDialog(final Locale locale, final Configurations config)
     {
         super(locale);
         ResourceBundle res = ResourceBundle.getBundle("bundles.ArtistDialog", locale);
         addPhase(createArtistForm(res));
-    }
-
-    public void populateOriginList(ArrayList<String> origins)
-    {
-        ui_originChoice.setItems(FXCollections.observableList(origins));
-    }
-    
-    public void populateFoundedList(int first, int last)
-    {
-        if(first > last)
-        {
-            int tmp = first;
-            first = last;
-            last = tmp;
-        }
         
-        ArrayList<String> list = new ArrayList<>();
-        for(int i = last; i >= first; --i)
-            list.add(Integer.toString(i));
-        
-        ui_foundedChoice.setItems(FXCollections.observableList(list));
+        populateOrigins(locale);
+        populateFoundeds(config);
     }
     
     public String getType()
@@ -74,9 +58,9 @@ public class ArtistDialog extends AbstractPhasedDialog
         return ui_aliasField.getText();
     }
     
-    public String getOrigin()
+    public String getOriginCode()
     {
-        return ui_originChoice.getSelectionModel().getSelectedItem();
+        return ui_originChoice.getSelectionModel().getSelectedItem().getKey();
     }
     
     public String getFounded()
@@ -97,6 +81,28 @@ public class ArtistDialog extends AbstractPhasedDialog
     @Override
     protected void rollBack()
     {
+    }
+    
+    private void populateOrigins(final Locale locale)
+    {
+        ResourceBundle loc = ResourceBundle.getBundle("bundles.ListOfCountries", locale);
+        
+        ArrayList<KeyValueCombo> values = new ArrayList<>();
+        for(String key : loc.keySet())
+            values.add(new KeyValueCombo(key, loc.getString(key)));
+        
+        Collections.sort(values);
+        
+        ui_originChoice.setItems(FXCollections.observableArrayList(values));
+    }
+    
+    private void populateFoundeds(final Configurations config)
+    {
+        ArrayList<String> list = new ArrayList<>();
+        for(int i = config.getFoundedEndValue(); i >= config.getFoundedStartValue(); --i)
+            list.add(Integer.toString(i));
+        
+        ui_foundedChoice.setItems(FXCollections.observableList(list));
     }
     
     private GridPane createArtistForm(ResourceBundle res)
