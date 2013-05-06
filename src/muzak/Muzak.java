@@ -1,11 +1,12 @@
-package muzak;
 
+package muzak;
 
 import java.util.ResourceBundle;
 
+import muzak.Configurations.Resources;
+
 import javafx.application.Application;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.*;
 import javafx.geometry.*;
 import javafx.scene.Cursor;
@@ -27,8 +28,6 @@ public class Muzak extends Application
 {
     private MainControl m_controller = new MainControl();
     
-    private Scene scene = null;
-    
     private TextField               ui_searchField      = null;
     private Button                  ui_searchButton     = null;
     private ComboBox<KeyValueCombo> ui_searchFilter     = null;
@@ -37,9 +36,9 @@ public class Muzak extends Application
     @Override
     public void start(Stage stage) throws Exception
     {
-        ResourceBundle res = ResourceBundle.getBundle("bundles.MainWindowTitles", m_controller.getLocale());
+        ResourceBundle res = m_controller.getConfigurations().getResources(Resources.MAIN_WINDOW);
         
-        scene = new Scene( createMainLayout(res) );
+        Scene scene = new Scene(createMainLayout(res));
         scene.getStylesheets().add(getClass().getResource("styles/main.css").toExternalForm());
         stage.setScene(scene);
         
@@ -50,6 +49,8 @@ public class Muzak extends Application
         stage.setHeight(0.75 * screen.getHeight());
         
         m_controller.setMainWindow(stage);
+        
+        stage.setTitle(res.getString("MAIN_TITLE"));
         
         stage.show();
     }
@@ -63,7 +64,6 @@ public class Muzak extends Application
             {
                 m_controller.handleMenuAction(event);
             }
-            
         };
         
         Menu menu1 = new Menu(res.getString("FILE"));
@@ -119,12 +119,9 @@ public class Muzak extends Application
     
     private HBox createMenuBarBox(ResourceBundle res)
     {
-        Region stretcher = new Region();
-        HBox.setHgrow(stretcher, Priority.ALWAYS);
-        
         Button lang_fiButton = new Button("FI");
         lang_fiButton.setGraphic(new ImageView(new Image("file:resources/icons/flag_fi.png")));
-        lang_fiButton.setStyle("-fx-background-color: transparent;");
+        lang_fiButton.getStyleClass().addAll("lang-button");
         lang_fiButton.setId("LangFIRequest");
         lang_fiButton.setOnAction(new EventHandler<ActionEvent>()
         {
@@ -133,14 +130,14 @@ public class Muzak extends Application
             {
                 if(m_controller.changeToFinnish())
                 {
-                    reloadVisibles();
+                    reloadVisibles(m_controller.getConfigurations());
                 }
             }
         });
         
         Button lang_enButton = new Button("EN");
         lang_enButton.setGraphic(new ImageView(new Image("file:resources/icons/flag_gb.png")));
-        lang_enButton.setStyle("-fx-background-color: transparent;");
+        lang_enButton.getStyleClass().addAll("lang-button");
         lang_enButton.setId("LangENRequest");
         lang_enButton.setOnAction(new EventHandler<ActionEvent>()
         {
@@ -149,16 +146,16 @@ public class Muzak extends Application
             {
                 if(m_controller.changeToEnglish())
                 {
-                    reloadVisibles();
+                    reloadVisibles(m_controller.getConfigurations());
                 }
             }
         });
         
         ui_menuBarLayout = new HBox();
         ui_menuBarLayout.setSpacing(10.0);
-        ui_menuBarLayout.setStyle("-fx-background-color: -fx-selection-bar;");
-        ui_menuBarLayout.getChildren().addAll(createMenuBar(res), stretcher, lang_fiButton, lang_enButton);
-
+        ui_menuBarLayout.getStyleClass().setAll("main-menubar");
+        ui_menuBarLayout.getChildren().addAll(createMenuBar(res), UIUtils.getHStretcher(), lang_fiButton, lang_enButton);
+        
         return ui_menuBarLayout;
     }
     
@@ -220,12 +217,10 @@ public class Muzak extends Application
         addTracks.setMinSize(27, 27);
         addTracks.setMaxSize(addTracks.getMinWidth(), addTracks.getMinHeight());
         */
-        Region stretcher = new Region();
-        HBox.setHgrow(stretcher, Priority.ALWAYS);
         
         HBox toolsLayout = new HBox();
-        toolsLayout.getStyleClass().setAll("main-pane");
-        toolsLayout.getChildren().addAll(ui_searchField, ui_searchFilter, ui_searchButton, stretcher);
+        toolsLayout.getStyleClass().setAll("glass-pane", "main-pane");
+        toolsLayout.getChildren().addAll(ui_searchField, ui_searchFilter, ui_searchButton, UIUtils.getHStretcher());
         
         return toolsLayout;
     }
@@ -288,29 +283,34 @@ public class Muzak extends Application
         Text status = new Text("This is status bar.");
         bottomLayout.getChildren().add(status);
         root.setBottom(bottomLayout);
-        root.setId("background");
+        root.getStyleClass().addAll("base-values");
         
         return root;
     }
     
-    private void reloadVisibles()
+    private void reloadVisibles(final Configurations config)
     {
         System.out.println("Reloading Visibles...");
         
-        ResourceBundle res = ResourceBundle.getBundle("bundles.MainWindowTitles", m_controller.getLocale());
+        ResourceBundle res = config.getResources(Resources.MAIN_WINDOW);
         
+        /* Re-populate search filter. */
         int selected = ui_searchFilter.getSelectionModel().getSelectedIndex();
-        
         ui_searchFilter.setItems(FXCollections.observableArrayList(new KeyValueCombo("SEEK_NOFILT",     res.getString("SEEK_NOFILT")),
                                                                    new KeyValueCombo("SEEK_ARTISTS",    res.getString("SEEK_ARTISTS")),
                                                                    new KeyValueCombo("SEEK_RELEASES",   res.getString("SEEK_RELEASES")),
                                                                    new KeyValueCombo("SEEK_TRACKS",     res.getString("SEEK_TRACKS"))));
         ui_searchFilter.getSelectionModel().select(selected);
         
+        /* Re-text search button. */
         ui_searchButton.setText(res.getString("SEARCH"));
         
+        /* Re-create menubar and menus. */
         ui_menuBarLayout.getChildren().remove(0);
         ui_menuBarLayout.getChildren().add(0, createMenuBar(res));
+        
+        /* Re-title main window. */
+        m_controller.getMainWindow().setTitle(res.getString("MAIN_TITLE"));
     }
     
     public static void main(String[] args)

@@ -1,16 +1,19 @@
 package muzak;
 
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.ResourceBundle;
+
+import muzak.Configurations.Resources;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.Button;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -19,6 +22,8 @@ public abstract class AbstractPhasedDialog extends Stage
     private ArrayList<Pane> m_phases;
     private int             m_phaseIndex;
     private boolean         m_accepted;
+    private boolean         m_discogsRequest;
+    private boolean         m_createDiscogsForm;
     
     /* Base Dialog controls. */
     protected Button    ui_backButton;
@@ -26,13 +31,15 @@ public abstract class AbstractPhasedDialog extends Stage
     protected Button    ui_okButton;
     protected Button    ui_cancelButton;
     
-    public AbstractPhasedDialog(final Locale locale)
+    public AbstractPhasedDialog(final Configurations config)
     {
-        m_phases        = new ArrayList<>();
-        m_phaseIndex    = 0;
-        m_accepted      = false;
+        m_phases         = new ArrayList<>();
+        m_phaseIndex     = 0;
+        m_accepted       = false;
+        m_discogsRequest = false;
+        m_createDiscogsForm = true;
         
-        ResourceBundle res = ResourceBundle.getBundle("bundles.AbstractPhasedDialog", locale);
+        ResourceBundle res = config.getResources(Resources.ABSTRACT_PHASED_DIALOG);
         
         Scene scene = new Scene(createBaseLayout(res));
         scene.getStylesheets().add(getClass().getResource("styles/main.css").toExternalForm());
@@ -59,54 +66,50 @@ public abstract class AbstractPhasedDialog extends Stage
      * of the dialog by pressing "back" button. */
     protected abstract void rollBack();
     
-    /* Instantiates phases defined by resources and shows current phase. */
-//    protected void loadPhases(ArrayList<String> resources, Locale locale, ArrayList<BuilderFactory> builders)
-//    {
-//        for(int i = 0; i < resources.size(); ++i)
-//            m_phases.add(createPhase(resources.get(i), locale, builders.get(i)));
-//        
-//        setContentPane(m_phases.get(m_phaseIndex));
-//        permitNavigation();
-//    }
+    protected abstract Pane createDiscogsResultPane();
     
-    /* Overloaded convenience method. */
-//    protected void loadPhases(ArrayList<String> resources, Locale locale)
-//    {
-//        /* Create a list of null builders. */
-//        ArrayList<BuilderFactory> dummies = new ArrayList<>(resources.size());
-//        for(int i = 0; i < resources.size(); ++i)
-//            dummies.add(null);
-//        
-//        loadPhases(resources, locale, dummies);
-//    }
-    
-    protected void addPhase(Pane p)
+    protected boolean isLastPhase()
     {
-        m_phases.add(p);
+        return m_phaseIndex == m_phases.size()-1;
+    }
+    
+    protected int getCurrentPhase()
+    {
+        return m_phaseIndex + 1;
+    }
+    
+    protected boolean isDiscogsRequested()
+    {
+        return m_discogsRequest;
+    }
+    
+    protected Button getDiscogsButton()
+    {
+        Button b = new Button("Discogs");
+        b.setId("DiscogsButton");
+        b.setOnAction(new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle(ActionEvent ae)
+            {
+                navigate(ae);
+            }
+            
+        });
+        
+        return b;
+    }
+    
+    protected void addPhase(Pane phase)
+    {
+        m_phases.add(phase);
+    }
+    
+    protected void firstPhase()
+    {
         setContentPane(m_phases.get(m_phaseIndex));
         permitNavigation();
     }
-    
-//    private Pane createPhase(String resource, Locale locale, BuilderFactory builder)
-//    {
-//        Pane pane = null;
-//        
-//        FXMLLoader loader = new FXMLLoader();
-//        loader.setResources(ResourceBundle.getBundle("bundles.Bundle", locale));
-//        loader.setLocation(getClass().getResource(resource));
-//        if(builder != null)
-//            loader.setBuilderFactory(builder);
-//        loader.setController(this);
-//        
-//        try {
-//            pane = (Pane)loader.load();
-//        }
-//        catch(IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//        
-//        return pane;
-//    }
     
     private void setContentPane(Pane contents)
     {
@@ -121,20 +124,38 @@ public abstract class AbstractPhasedDialog extends Stage
         
         switch(id)
         {
-            case "backButton":
+            case "BackButton":
                 if(decPhase())
                 {
-                    permitNavigation();
                     rollBack();
+                    permitNavigation();
                     setContentPane(m_phases.get(m_phaseIndex));
                 }
                 break;
                 
-            case "nextButton":
+            case "NextButton":
                 if(incPhase())
                 {
-                    permitNavigation();
                     proceed();
+                    permitNavigation();
+                    setContentPane(m_phases.get(m_phaseIndex));
+                }
+                break;
+                
+            case "DiscogsButton":
+                if(incPhase())
+                {
+                    /* If this is the first attempt to use Discogs, create respective forms. */
+                    if(m_createDiscogsForm)
+                    {
+                        m_phases.add(m_phaseIndex, createDiscogsResultPane());
+                        m_phases.add(m_phaseIndex+1, m_phases.get(0));
+                        m_createDiscogsForm = false;
+                    }
+                    
+                    System.out.println("Discogs request!");
+                    proceed();
+                    permitNavigation();
                     setContentPane(m_phases.get(m_phaseIndex));
                 }
                 break;
@@ -174,6 +195,12 @@ public abstract class AbstractPhasedDialog extends Stage
                 ui_nextButton.setDisable(false);
             }
         }
+    }
+    
+    private void jumpPhases(int cnt)
+    {
+        while(cnt-- > 0)
+            incPhase();
     }
     
     private boolean incPhase()
@@ -235,7 +262,6 @@ public abstract class AbstractPhasedDialog extends Stage
         {
             @Override public void handle(WindowEvent t)
             {
-                System.out.println("Dialog rejected via X");
                 m_accepted = false;
                 close();
             }
@@ -245,18 +271,20 @@ public abstract class AbstractPhasedDialog extends Stage
     private BorderPane createBaseLayout(ResourceBundle res)
     {
         HBox buttonsLayout = new HBox(5.0);
-        buttonsLayout.setPadding(new Insets(5.0));
+        buttonsLayout.setPadding(new Insets(10.0, 5.0, 5.0, 5.0));
         
         ui_backButton = new Button(res.getString("BACK"));
+        ui_backButton.setId("BackButton");
+        
         ui_nextButton = new Button(res.getString("NEXT"));
+        ui_nextButton.setId("NextButton");
+        
         ui_okButton = new Button(res.getString("OK"));
+        
         ui_cancelButton = new Button(res.getString("CANCEL"));
         ui_cancelButton.setCancelButton(true);
         
-        Region stretcher = new Region();
-        HBox.setHgrow(stretcher, Priority.ALWAYS);
-        
-        buttonsLayout.getChildren().addAll(ui_backButton, ui_nextButton, stretcher, ui_okButton, ui_cancelButton);
+        buttonsLayout.getChildren().addAll(ui_backButton, ui_nextButton, UIUtils.getHStretcher(), ui_okButton, ui_cancelButton);
         
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(5.0));

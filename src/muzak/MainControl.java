@@ -1,7 +1,5 @@
-package muzak;
 
-import java.util.Calendar;
-import java.util.Locale;
+package muzak;
 
 import muzakModel.Artist;
 import muzakModel.MuzakDataModel;
@@ -17,8 +15,7 @@ public class MainControl
     private MuzakDataModel m_model;
     private MuzakConfig m_config;
     /* Initialize 'default' locale. */
-    /* TODO: locale should be part of configurations. */
-    private Locale m_locale = new Locale("fi");
+    //private Locale m_locale = new Locale("fi");
     private Stage mainWindow;
     
     public MainControl()
@@ -33,31 +30,36 @@ public class MainControl
         mainWindow = win;
     }
     
-    public Locale getLocale()
+    public Stage getMainWindow()
     {
-        return m_locale;
+        return mainWindow;
+    }
+    
+    public Configurations getConfigurations()
+    {
+        return m_config;
     }
     
     public boolean changeToFinnish()
     {
-        return changeLocale("fi");
+        return m_config.changeLangToFI();
     }
     
     public boolean changeToEnglish()
     {
-        return changeLocale("en");
+        return m_config.changeLangToEN();
     }
     
-    public boolean changeLocale(String iso639code)
-    {
-        Locale other = new Locale(iso639code);
-
-        if(this.m_locale.getLanguage().equals(other.getLanguage())) return false;
-        
-        this.m_locale = other;
-        
-        return true;
-    }
+//    public boolean changeLocale(String iso639code)
+//    {
+//        Locale other = new Locale(iso639code);
+//
+//        if(this.m_locale.getLanguage().equals(other.getLanguage())) return false;
+//        
+//        this.m_locale = other;
+//        
+//        return true;
+//    }
     
     public void handleSearchAction(String searchString, String filter)
     {
@@ -141,7 +143,7 @@ public class MainControl
     
     private void showArtistDialog()
     {
-        ArtistDialog dialog = new ArtistDialog(m_locale, m_config);
+        ArtistDialog dialog = new ArtistDialog(m_config);
         dialog.initModality(Modality.WINDOW_MODAL);
         dialog.initOwner(mainWindow);
         
@@ -150,7 +152,7 @@ public class MainControl
             String type = dialog.getType();
             String name = dialog.getName();
             String aliasesString = dialog.getAliases();
-            String origin = dialog.getOriginCode();
+            String ccode = dialog.getOriginCode();
             String founded = dialog.getFounded();
             String comment = dialog.getComment();
             
@@ -158,7 +160,7 @@ public class MainControl
             artist.setType(type);
             artist.setName(name);
             artist.setTechName(name);
-            artist.setCountryCode(origin);
+            artist.setCountryCode(ccode);
             artist.setFounded(Integer.parseInt(founded));
             artist.setComment(comment);
             String[] aliases = aliasesString.split(";");
