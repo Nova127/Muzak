@@ -10,6 +10,7 @@ public interface Configurations
         MAIN_WINDOW,
         ABSTRACT_PHASED_DIALOG,
         ARTIST_DIALOG,
+        RELEASE_DIALOG,
         LIST_OF_COUNTRIES;
     }
     

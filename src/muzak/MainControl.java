@@ -81,6 +81,7 @@ public class MainControl
             break;
         case "AddReleaseRequest":
             System.out.println(((MenuItem)event.getSource()).getId());
+            showReleaseDialog();
             break;
         case "AddTracksRequest":
             System.out.println(((MenuItem)event.getSource()).getId());
@@ -139,6 +140,14 @@ public class MainControl
             /* Shouldn't really happen... */
             break;
         } 
+    }
+    
+    private void showReleaseDialog()
+    {
+        ReleaseDialog dialog = new ReleaseDialog(m_config);
+        dialog.initModality(Modality.WINDOW_MODAL);
+        dialog.initOwner(mainWindow);
+        dialog.execute();
     }
     
     private void showArtistDialog()
