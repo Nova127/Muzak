@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package muzak;
 
 import java.util.ResourceBundle;
@@ -17,27 +14,23 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import muzak.mycomp.MultiSelectionListView;
 import muzak.mycomp.TablessTextArea;
 
-/**
- *
- * @author Harri
- */
 public class ReleaseDialog extends AbstractPhasedDialog
 {
-    private TextField ui_titleField;
-    private TextField ui_altTitleField;
-    private TextField ui_catNumberField;
-    private TextField ui_barCodeField;
-    private MultiSelectionListView ui_typeList;
-    private MultiSelectionListView ui_mediaList;
-    private ToggleGroup ui_releaseOptions;
-    private CheckBox ui_extendedOption;
-    private ComboBox<String> ui_orgYearChoice;
-    private ComboBox<String> ui_curYearChoice;
+    private TextField               ui_titleField;
+    private TextField               ui_altTitleField;
+    private TextField               ui_catNumberField;
+    private TextField               ui_barCodeField;
+    private MultiSelectionListView  ui_typeList;
+    private MultiSelectionListView  ui_mediaList;
+    private ToggleGroup             ui_releaseOptions;
+    private CheckBox                ui_extendedOption;
+    private ComboBox<String>        ui_orgYearChoice;
+    private ComboBox<String>        ui_curYearChoice;
     private ComboBox<KeyValueCombo> ui_styleChoice;
-    private TablessTextArea ui_commentArea;
-    
+    private TablessTextArea         ui_commentArea;
     
     public ReleaseDialog(final Configurations config)
     {

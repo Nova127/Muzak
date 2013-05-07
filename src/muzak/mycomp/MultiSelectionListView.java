@@ -1,4 +1,5 @@
-package muzak;
+
+package muzak.mycomp;
 
 import java.util.ArrayList;
 

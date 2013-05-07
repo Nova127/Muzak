@@ -1,5 +1,5 @@
 
-package muzak;
+package muzak.mycomp;
 
 import javafx.beans.value.*;
 import javafx.event.ActionEvent;
