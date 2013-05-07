@@ -11,9 +11,13 @@ class MuzakConfig implements Configurations
     /* Default values: */
     private static final int DEF_FOUNDED_START_VALUE = 1900;
     private static final int DEF_FOUNDED_END_VALUE = 0;
+    private static final int DEF_RELEASED_START_VALUE = 1950;
+    private static final int DEF_RELEASED_END_VALUE = 0;
     
     private int m_foundedStartValue;
     private int m_foundedEndValue;
+    private int m_releasedStartValue;
+    private int m_releasedEndValue;
     
     public MuzakConfig()
     {
@@ -21,6 +25,8 @@ class MuzakConfig implements Configurations
         
         m_foundedStartValue = DEF_FOUNDED_START_VALUE;
         m_foundedEndValue = DEF_FOUNDED_END_VALUE;
+        m_releasedStartValue = DEF_RELEASED_START_VALUE;
+        m_releasedEndValue = DEF_RELEASED_END_VALUE;
     }
     
     @Override
@@ -33,15 +39,26 @@ class MuzakConfig implements Configurations
     public int getFoundedEndValue()
     {
         if(m_foundedStartValue > m_foundedEndValue)
-        {
-            Calendar c = Calendar.getInstance();
-            
-            return c.get(Calendar.YEAR);
-        }
+            return getCurrentYear();
         
         return m_foundedEndValue;
     }
 
+    @Override
+    public int getReleasedStartValue()
+    {
+        return m_releasedStartValue;
+    }
+    
+    @Override
+    public int getReleasedEndValue()
+    {
+        if(m_releasedStartValue > m_releasedEndValue)
+            return getCurrentYear();
+        
+        return m_releasedEndValue;
+    }
+    
     @Override
     public ResourceBundle getResources(Resources resource)
     {
@@ -69,8 +86,20 @@ class MuzakConfig implements Configurations
             baseName += "ListOfCountries";
             break;
             
+        case LIST_OF_STYLES:
+            baseName += "ListOfStyles";
+            break;
+            
+        case LIST_OF_RELEASE_TYPES:
+            baseName += "ListOfReleaseTypes";
+            break;
+            
+        case LIST_OF_RELEASE_MEDIA:
+            baseName += "ListOfReleaseMedia";
+            break;
+            
         default:
-            /* Shouldn't happen:P */
+            /* Shouldn't happen... :P */
             break;
         }
         
@@ -103,6 +132,13 @@ class MuzakConfig implements Configurations
     public Locale getCurrentLocale()
     {
         return m_locale;
+    }
+    
+    private int getCurrentYear()
+    {
+        Calendar c = Calendar.getInstance();
+        
+        return c.get(Calendar.YEAR);
     }
     
     private boolean changeLocale(String iso639code)

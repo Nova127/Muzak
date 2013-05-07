@@ -51,8 +51,8 @@ public class ArtistDialog extends AbstractPhasedDialog
         super.addPhase(createArtistForm(res));
         super.addPhase(createArtistSummary(res));
         
-        populateOrigins(config);
-        populateFoundeds(config);
+        UIUtils.populate(ui_originChoice, config.getResources(Resources.LIST_OF_COUNTRIES));
+        UIUtils.populate(ui_foundedChoice, config.getFoundedStartValue(), config.getFoundedEndValue());
         
         setTitle(res.getString("DIALOG_TITLE"));
         
@@ -129,29 +129,7 @@ public class ArtistDialog extends AbstractPhasedDialog
         
         ui_commentValue.setText(getComment());
     }
-    
-    private void populateOrigins(final Configurations config)
-    {
-        ResourceBundle loc = config.getResources(Resources.LIST_OF_COUNTRIES);
-        
-        ArrayList<KeyValueCombo> values = new ArrayList<>();
-        for(String key : loc.keySet())
-            values.add(new KeyValueCombo(key, loc.getString(key)));
-        
-        Collections.sort(values);
-        
-        ui_originChoice.setItems(FXCollections.observableArrayList(values));
-    }
-    
-    private void populateFoundeds(final Configurations config)
-    {
-        ArrayList<String> list = new ArrayList<>();
-        for(int i = config.getFoundedEndValue(); i >= config.getFoundedStartValue(); --i)
-            list.add(Integer.toString(i));
-        
-        ui_foundedChoice.setItems(FXCollections.observableList(list));
-    }
-    
+
     private GridPane createArtistSummary(ResourceBundle res)
     {
         GridPane pane = new GridPane();

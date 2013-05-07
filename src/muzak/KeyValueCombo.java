@@ -1,6 +1,6 @@
 package muzak;
 
-class KeyValueCombo implements Comparable<KeyValueCombo>
+public class KeyValueCombo implements Comparable<KeyValueCombo>
 {
     private String m_key;
     private String m_value;

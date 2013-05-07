@@ -2,6 +2,11 @@
 package muzak.mycomp;
 
 import java.util.ArrayList;
+import java.util.ResourceBundle;
+
+import muzak.KeyValueCombo;
+
+import com.sun.org.apache.xml.internal.security.keys.content.keyvalues.KeyValueContent;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -74,9 +79,13 @@ public class MultiSelectionListView extends ListView<SelectionElement>
         this.setCellFactory(CheckBoxListCell.forListView(cb));
     }
     
-    public void insertSelectionElements(ArrayList<SelectionElement> elems)
+    public void insertSelectionElements(ResourceBundle res)
     {
-        this.setItems(FXCollections.observableArrayList(elems));
+        ArrayList<SelectionElement> items = new ArrayList<>();
+        for(String key : res.keySet())
+            items.add(new SelectionElement(key, res.getString(key)));
+        
+        this.setItems(FXCollections.observableArrayList(items));
     }
     
     public ArrayList<String> getSelectedKeys()

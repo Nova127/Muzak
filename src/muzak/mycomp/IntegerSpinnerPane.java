@@ -182,15 +182,25 @@ public class IntegerSpinnerPane extends GridPane
     
     private void setupUi()
     {
+        ImageView iv1 = new ImageView(new Image("file:resources/icons/addIcon.png"));
+        iv1.setFitHeight(14.0);
+        iv1.setPreserveRatio(true);
+        iv1.setSmooth(true);
+        
         incButton = new Button();
-        incButton.setGraphic(new ImageView(new Image("file:icons/addIcon.png")));
+        incButton.setGraphic(iv1);
         incButton.setStyle("-fx-background-radius: 0 5 5 0");
         incButton.setMinSize(25, 20);
         incButton.setMaxSize(25, 20);
         incButton.setFocusTraversable(false);
         
+        ImageView iv2 = new ImageView(new Image("file:resources/icons/subIcon.png"));
+        iv2.setFitHeight(14.0);
+        iv2.setPreserveRatio(true);
+        iv2.setSmooth(true);
+        
         decButton = new Button();
-        decButton.setGraphic(new ImageView(new Image("file:icons/subIcon.png")));
+        decButton.setGraphic(iv2);
         decButton.setStyle("-fx-background-radius: 5 0 0 5");
         decButton.setMinSize(25, 20);
         decButton.setMaxSize(25, 20);
