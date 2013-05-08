@@ -32,6 +32,7 @@ public class Muzak extends Application
     private Button                  ui_searchButton     = null;
     private ComboBox<KeyValueCombo> ui_searchFilter     = null;
     private HBox                    ui_menuBarLayout    = null;
+    private VBox                    ui_contentPane      = null;
     
     @Override
     public void start(Stage stage) throws Exception
@@ -272,10 +273,10 @@ public class Muzak extends Application
         centerPiece.setHbarPolicy(ScrollBarPolicy.NEVER);
         centerPiece.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
         centerPiece.setFitToWidth(true);
-        VBox contentPane = new VBox();
-        contentPane.setPadding(new Insets(5.0, 5.0, 5.0, 5.0));
-        contentPane.setSpacing(5.0);
-        centerPiece.setContent(contentPane);
+        ui_contentPane = new VBox();
+        ui_contentPane.setPadding(new Insets(5.0, 5.0, 5.0, 5.0));
+        ui_contentPane.setSpacing(5.0);
+        centerPiece.setContent(ui_contentPane);
         root.setCenter(centerPiece);
         
         HBox bottomLayout = new HBox();

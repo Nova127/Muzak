@@ -1,6 +1,7 @@
 
 package muzak;
 
+import java.util.ArrayList;
 import muzakModel.Artist;
 import muzakModel.MuzakDataModel;
 
@@ -9,6 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.control.MenuItem;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import muzakModel.NotUniqueSignatureException;
 
 public class MainControl
 {
@@ -117,7 +119,7 @@ public class MainControl
     {
         if(!(event.getSource() instanceof Node)) return;
         
-        switch (((Node) event.getSource()).getId()) 
+        switch(((Node)event.getSource()).getId())
         {
             case "SearchRequest":
                 System.out.println("Search requested from Main Window.");
@@ -160,22 +162,39 @@ public class MainControl
         {
             String type = dialog.getType();
             String name = dialog.getName();
-            String aliasesString = dialog.getAliases();
+            String tech = dialog.getTechName();
+            ArrayList<String> aliases = dialog.getAliases();
             String ccode = dialog.getOriginCode();
-            String founded = dialog.getFounded();
+            int founded = dialog.getFounded();
             String comment = dialog.getComment();
             
-            Artist artist = MuzakDataModel.createArtist();
-            artist.setType(type);
-            artist.setName(name);
-            artist.setTechName(name);
-            artist.setCountryCode(ccode);
-            artist.setFounded(Integer.parseInt(founded));
-            artist.setComment(comment);
-            String[] aliases = aliasesString.split(";");
-            for(int i = 0; i < aliases.length; ++i)
+            if(name.isEmpty() || tech.isEmpty())
             {
-                artist.addAlias(aliases[i].trim());
+                
+            }
+            else
+            {
+                Artist artist = MuzakDataModel.createArtist();
+                artist.setType(type);
+                artist.setName(name);
+                artist.setTechName(tech);
+                if(!ccode.isEmpty())
+                    artist.setCountryCode(ccode);
+                if(founded >= m_config.getFoundedStartValue())
+                    artist.setFounded(founded);
+                artist.setComment(comment);
+
+                for(String s : aliases)
+                    artist.addAlias(s);
+                
+                try
+                {
+                    m_model.insertArtist(artist);
+                }
+                catch(IllegalArgumentException | NotUniqueSignatureException e)
+                {
+                    
+                }
             }
         }
         else

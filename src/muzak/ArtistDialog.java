@@ -66,22 +66,43 @@ public class ArtistDialog extends AbstractPhasedDialog
     
     public String getName()
     {
-        return ui_nameField.getText();
+        return ui_nameField.getText().trim();
     }
     
-    public String getAliases()
+    public String getTechName()
     {
-        return ui_aliasField.getText();
+        return UIUtils.trimArticles(getName());
+    }
+    
+    public ArrayList<String> getAliases()
+    {
+        ArrayList<String> aliases = new ArrayList<>();
+        
+        if(ui_aliasField.getText().trim().isEmpty())
+            return aliases;
+        
+        for(String s : ui_aliasField.getText().split(";"))
+            aliases.add(s.trim());
+        
+        return aliases;
     }
     
     public String getOriginCode()
     {
-        return ui_originChoice.getSelectionModel().getSelectedItem().getKey();
+        KeyValueCombo kvc = ui_originChoice.getSelectionModel().getSelectedItem();
+        if(kvc != null)
+            return kvc.getKey();
+        else
+            return "";
     }
     
-    public String getFounded()
+    public int getFounded()
     {
-        return ui_foundedChoice.getSelectionModel().getSelectedItem();
+        String val = ui_foundedChoice.getSelectionModel().getSelectedItem();
+        if(val != null)
+            return Integer.parseInt(val);
+        else
+            return -1;
     }
     
     public String getComment()
@@ -110,10 +131,13 @@ public class ArtistDialog extends AbstractPhasedDialog
     
     private void populateSummary()
     {
-        ui_typeValue.setText(getType());
-        ui_nameValue.setText(getName());
-        ui_techNameValue.setText(getName());
-        ui_aliasesValue.setText(getAliases());
+        String tmp = "";
+        tmp += ((RadioButton)ui_typeOptions.getSelectedToggle()).getText();
+        
+        ui_typeValue.setText(tmp);
+        ui_nameValue.setText(ui_nameField.getText());
+        ui_techNameValue.setText(UIUtils.trimArticles(ui_nameField.getText()));
+        ui_aliasesValue.setText(ui_aliasField.getText());
         
         KeyValueCombo origin = ui_originChoice.getSelectionModel().getSelectedItem();
         if(origin != null)
@@ -121,13 +145,13 @@ public class ArtistDialog extends AbstractPhasedDialog
         else
             ui_originValue.setText("");
         
-        String founded = getFounded();
+        String founded = ui_foundedChoice.getSelectionModel().getSelectedItem();
         if(founded != null)
             ui_foundedValue.setText(founded);
         else
             ui_foundedValue.setText("");
         
-        ui_commentValue.setText(getComment());
+        ui_commentValue.setText(ui_commentArea.getText());
     }
 
     private GridPane createArtistSummary(ResourceBundle res)
