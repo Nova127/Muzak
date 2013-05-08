@@ -2,11 +2,10 @@
 package muzak.mycomp;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.ResourceBundle;
 
 import muzak.KeyValueCombo;
-
-import com.sun.org.apache.xml.internal.security.keys.content.keyvalues.KeyValueContent;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -14,12 +13,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.util.Callback;
 
-class SelectionElement
+class SelectionElement implements Comparable<SelectionElement>
 {
     private final StringProperty    techKey;
     private final StringProperty    displayKey;
@@ -55,6 +53,12 @@ class SelectionElement
     {
         return displayKey.get();
     }
+
+    @Override
+    public int compareTo(SelectionElement other)
+    {
+        return techKey.get().compareTo(other.techKey.get());
+    }
 }
 
 public class MultiSelectionListView extends ListView<SelectionElement>
@@ -85,17 +89,19 @@ public class MultiSelectionListView extends ListView<SelectionElement>
         for(String key : res.keySet())
             items.add(new SelectionElement(key, res.getString(key)));
         
+        Collections.sort(items);
+        
         this.setItems(FXCollections.observableArrayList(items));
     }
     
-    public ArrayList<String> getSelectedKeys()
+    public ArrayList<KeyValueCombo> getSelected()
     {
-        ArrayList<String> selections = new ArrayList<>();
+        ArrayList<KeyValueCombo> selections = new ArrayList<>();
         
         for(SelectionElement e : this.getItems())
         {
             if(e.getSelectionValue())
-                selections.add(e.getTechKey());
+                selections.add(new KeyValueCombo(e.getTechKey(), e.getDisplayKey()));
         }
         
         return selections;

@@ -18,6 +18,24 @@ import javafx.scene.layout.VBox;
 
 public class UIUtils
 {
+    public static String trimArticles(String str)
+    {
+        String trimmed = "";
+        
+        String[] bits = str.split(" ");
+        
+        if(bits[0].equalsIgnoreCase("the"))
+            trimmed = str.substring(4) + ", the";
+        else if(bits[0].equalsIgnoreCase("an"))
+            trimmed = str.substring(2) + ", an";
+        else if(bits[0].equalsIgnoreCase("a"))
+            trimmed = str.substring(1) + ", an";
+        else
+            trimmed = str;
+        
+        return trimmed;
+    }
+    
     public static void populate(ComboBox<KeyValueCombo> cbox, ResourceBundle res)
     {
         ArrayList<KeyValueCombo> values = new ArrayList<>();

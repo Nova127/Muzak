@@ -1,6 +1,8 @@
 
 package muzak;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
@@ -22,6 +24,7 @@ import muzak.mycomp.TablessTextArea;
 
 public class ReleaseDialog extends AbstractPhasedDialog
 {
+    /* Phase 1 UI components: */
     private TextField               ui_titleField           = new TextField();
     private TextField               ui_altTitleField        = new TextField();
     private TextField               ui_catNumberField       = new TextField();
@@ -37,6 +40,21 @@ public class ReleaseDialog extends AbstractPhasedDialog
     private ComboBox<KeyValueCombo> ui_ratingChoice         = new ComboBox<>();
     private TablessTextArea         ui_commentArea          = new TablessTextArea();
     private Button                  ui_discogsButton        = getDiscogsButton();
+    /* Phase 2 UI components: */
+    private Label                   ui_titleValue           = new Label();
+    private Label                   ui_techTitleValue       = new Label();
+    private Label                   ui_altTitleValue        = new Label();
+    private Label                   ui_catNumberValue       = new Label();
+    private Label                   ui_barCodeValue         = new Label();
+    private Label                   ui_typeValue            = new Label();
+    private Label                   ui_mediaValue           = new Label();
+    private Label                   ui_releaseValue         = new Label();
+    private Label                   ui_curYearValue         = new Label();
+    private Label                   ui_orgYearValue         = new Label();
+    private Label                   ui_discsValue           = new Label();
+    private Label                   ui_styleValue           = new Label();
+    private Label                   ui_ratingValue          = new Label();
+    private Label                   ui_commentValue         = new Label();
     
     public ReleaseDialog(final Configurations config)
     {
@@ -45,6 +63,7 @@ public class ReleaseDialog extends AbstractPhasedDialog
         ResourceBundle res = config.getResources(Resources.RELEASE_DIALOG);
 
         super.addPhase(createReleaseForm(res));
+        super.addPhase(createReleaseSummary(res));
         
         UIUtils.populate(ui_styleChoice, config.getResources(Resources.LIST_OF_STYLES));
         UIUtils.populate(ui_curYearChoice, config.getReleasedStartValue(), config.getReleasedEndValue());
@@ -58,6 +77,8 @@ public class ReleaseDialog extends AbstractPhasedDialog
     @Override
     protected void proceed()
     {
+        if(isLastPhase())
+            populateSummary();
     }
 
     @Override
@@ -71,9 +92,101 @@ public class ReleaseDialog extends AbstractPhasedDialog
         return null;
     }
     
-    private GridPane createReleaseSummary()
+    private void populateSummary()
     {
+        ui_titleValue.setText(ui_titleField.getText());
+        ui_techTitleValue.setText(UIUtils.trimArticles(ui_titleField.getText()));
+        ui_altTitleValue.setText(ui_altTitleField.getText());
+        ui_catNumberValue.setText(ui_catNumberField.getText());
+        ui_barCodeValue.setText(ui_barCodeField.getText());
+        
+        ui_typeValue.setText(formatSelections(ui_typeList.getSelected()));
+        ui_mediaValue.setText(formatSelections(ui_mediaList.getSelected()));
+        
+        String tmp = "";
+        tmp += ((RadioButton)ui_releaseOptions.getSelectedToggle()).getText();
+        if(ui_extendedOption.selectedProperty().get())
+            tmp += ((tmp.isEmpty()) ? "" : ", ") + ui_extendedOption.getText();
+        
+        ui_releaseValue.setText(tmp);
+        
+        tmp = ui_curYearChoice.getSelectionModel().getSelectedItem();
+        ui_curYearValue.setText(tmp != null ? tmp : "");
+        
+        tmp = ui_orgYearChoice.getSelectionModel().getSelectedItem();
+        ui_orgYearValue.setText(tmp != null ? tmp : "");
+        
+        ui_discsValue.setText(Integer.toString(ui_discCount.getCurrentValue()));
+        
+        KeyValueCombo kvc = ui_styleChoice.getSelectionModel().getSelectedItem();
+        ui_styleValue.setText(kvc != null ? kvc.getValue() : "");
+        
+        ui_commentValue.setText(ui_commentArea.getText());
+    }
+    
+    private String formatSelections(ArrayList<KeyValueCombo> selected)
+    {
+        String res = "";
+        
+        if(selected != null && !selected.isEmpty())
+        {
+            String tmp = "";
+            Iterator<KeyValueCombo> i = selected.iterator();
+            
+            while(i.hasNext())
+            {
+                tmp = i.next().toString(); // Moves current to next
+                res += (i.hasNext()) ? tmp + " + " : tmp;
+            }
+        }
+        
+        return res;
+    }
+    
+    private GridPane createReleaseSummary(ResourceBundle res)
+    {
+        ui_commentValue.setWrapText(true);
+        
         GridPane pane = new GridPane();
+        pane.getStyleClass().setAll("glass-pane", "dialog-phase");
+        pane.setHgap(10.0);
+        pane.setVgap(15.0);
+        
+        ColumnConstraints col0 = new ColumnConstraints();
+        col0.setHalignment(HPos.RIGHT);
+        pane.getColumnConstraints().addAll(col0);
+        
+        pane.add(new Label(res.getString("TITLE")), 0, 0);
+        pane.add(new Label(res.getString("TECH_TITLE")), 0, 1);
+        pane.add(new Label(res.getString("ALT_TITLE")), 0, 2);
+        pane.add(new Label(res.getString("CATALOG_NUMBER")), 0, 3);
+        pane.add(new Label(res.getString("BARCODE")), 0, 4);
+        pane.add(new Label(res.getString("TYPE")), 0, 5);
+        pane.add(new Label(res.getString("MEDIA")), 0, 6);
+        pane.add(new Label(res.getString("RELEASE")), 0, 7);
+        pane.add(new Label(res.getString("YEAR_OF_RELEASE")), 0, 8);
+        pane.add(new Label(res.getString("CURRENT")), 1, 8);
+        pane.add(new Label(res.getString("ORIGINAL")), 3, 8);
+        pane.add(new Label(res.getString("DISCS")), 0, 9);
+        pane.add(new Label(res.getString("STYLE")), 0, 10);
+        pane.add(new Label(res.getString("RATING")), 0, 11);
+        pane.add(new Label(res.getString("COMMENT")), 0, 12);
+        
+        pane.add(ui_titleValue, 1, 0, 4, 1);
+        pane.add(ui_techTitleValue, 1, 1, 4, 1);
+        pane.add(ui_altTitleValue, 1, 2, 4, 1);
+        pane.add(ui_catNumberValue, 1, 3, 4, 1);
+        pane.add(ui_barCodeValue, 1, 4, 4, 1);
+        pane.add(ui_typeValue, 1, 5, 4, 1);
+        pane.add(ui_mediaValue, 1, 6, 4, 1);
+        pane.add(ui_releaseValue, 1, 7, 4, 1);
+        pane.add(ui_curYearValue, 2, 8);
+        pane.add(ui_orgYearValue, 4, 8);
+        pane.add(ui_discsValue, 1, 9, 4, 1);
+        pane.add(ui_styleValue, 1, 10, 4, 1);
+        pane.add(ui_ratingValue, 1, 11, 4, 1);
+        pane.add(ui_commentValue, 1, 12, 4, 1);
+        
         return pane;
     }
     
@@ -126,8 +239,8 @@ public class ReleaseDialog extends AbstractPhasedDialog
         pane.add(ui_altTitleField, 1, 1, 4, 1);
         pane.add(ui_catNumberField, 1, 2, 4, 1);
         pane.add(ui_barCodeField, 1, 3, 4, 1);
-        pane.add(UIUtils.vLayout(10.0, new Label(res.getString("TYPE")), ui_typeList), 1, 4, 2, 1);
-        pane.add(UIUtils.vLayout(10.0, new Label(res.getString("MEDIA")), ui_mediaList), 3, 4, 2, 1);
+        pane.add(UIUtils.vLayout(10.0, new Label(res.getString("TYPE_GUIDE")), ui_typeList), 1, 4, 2, 1);
+        pane.add(UIUtils.vLayout(10.0, new Label(res.getString("MEDIA_GUIDE")), ui_mediaList), 3, 4, 2, 1);
         pane.add(UIUtils.hLayout(15.0, orgOpt, reiOpt, UIUtils.getHStretcher(), ui_extendedOption), 1, 5, 4, 1);
         pane.add(ui_curYearChoice, 2, 6);
         pane.add(ui_orgYearChoice, 4, 6);

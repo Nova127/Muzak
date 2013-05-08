@@ -5,7 +5,7 @@ public class KeyValueCombo implements Comparable<KeyValueCombo>
     private String m_key;
     private String m_value;
 
-    KeyValueCombo(String key, String value)
+    public KeyValueCombo(String key, String value)
     {
         m_key = key;
         m_value = value;
