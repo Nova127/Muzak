@@ -2,6 +2,8 @@
 package muzak;
 
 import java.util.ArrayList;
+
+import muzak.mycomp.ViewModDelObserver;
 import muzakModel.Artist;
 import muzakModel.MuzakDataModel;
 
@@ -13,7 +15,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import muzakModel.NotUniqueSignatureException;
 
-public class MainControl
+public class MainControl implements ViewModDelObserver
 {
     private MuzakDataModel m_model;
     private MuzakConfig m_config;
@@ -57,6 +59,24 @@ public class MainControl
     {
         System.out.println("Quitting...");
         Platform.exit();
+    }
+    
+    @Override
+    public void handleViewRequest(String idString, Object typeObject)
+    {
+        System.out.println("View Request from ID: " + idString + " of " + typeObject.toString());
+    }
+
+    @Override
+    public void handleModifyRequest(String idString, Object typeObject)
+    {
+        System.out.println("Modify Request from ID: " + idString + " of " + typeObject.toString());
+    }
+
+    @Override
+    public void handleDeleteRequest(String idString, Object typeObject)
+    {
+        System.out.println("Delete Request from ID: " + idString + " of " + typeObject.toString());
     }
     
     public void handleSearchAction(String searchString, String filter)
@@ -197,5 +217,4 @@ public class MainControl
         else
             System.out.println("Dialog rejected!");
     }
-    
 }

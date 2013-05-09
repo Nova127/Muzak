@@ -1,6 +1,8 @@
 package muzak.mycomp;
 
 import muzak.UIUtils;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -15,13 +17,40 @@ public class ViewModDelTools extends HBox
     private Button  ui_modiButton   = new Button();
     private Button  ui_deleButton   = new Button();
     
-    public ViewModDelTools()
+    public ViewModDelTools(final ViewModDelObserver observer)
     {
         super(DEF_BUTTONS_SPACING);
         
         setupComponents();
 
         this.getChildren().addAll(ui_viewButton, ui_modiButton, ui_deleButton);
+        
+        ui_viewButton.setOnAction(new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle(ActionEvent arg0)
+            {
+                observer.handleViewRequest(getId(), getUserData());
+            }
+        });
+        
+        ui_modiButton.setOnAction(new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle(ActionEvent arg0)
+            {
+                observer.handleModifyRequest(getId(), getUserData());
+            }
+        });
+        
+        ui_deleButton.setOnAction(new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle(ActionEvent arg0)
+            {
+                observer.handleDeleteRequest(getId(), getUserData());
+            }
+        });
     }
     
     private void setupComponents()

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ResourceBundle;
 import javafx.geometry.HPos;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -15,7 +14,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import muzak.Configurations.Resources;
 import muzak.mycomp.IntegerSpinnerPane;
@@ -96,7 +94,7 @@ public class ReleaseDialog extends AbstractPhasedDialog
     private void populateSummary()
     {
         ui_titleValue.setText(ui_titleField.getText());
-        ui_techTitleValue.setText(UIUtils.trimArticles(ui_titleField.getText()));
+        ui_techTitleValue.setText(MyUtils.trimArticles(ui_titleField.getText()));
         ui_altTitleValue.setText(ui_altTitleField.getText());
         ui_catNumberValue.setText(ui_catNumberField.getText());
         ui_barCodeValue.setText(ui_barCodeField.getText());

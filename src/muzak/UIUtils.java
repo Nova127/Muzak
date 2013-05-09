@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ResourceBundle;
 
+import muzak.mycomp.ViewModDelObserver;
 import muzak.mycomp.ViewModDelTools;
 
 import javafx.collections.FXCollections;
@@ -20,25 +21,7 @@ import javafx.scene.text.Text;
 
 public class UIUtils
 {
-    public static String trimArticles(String str)
-    {
-        String trimmed = "";
-        
-        String[] bits = str.split(" ");
-        
-        if(bits[0].equalsIgnoreCase("the"))
-            trimmed = str.substring(4) + ", the";
-        else if(bits[0].equalsIgnoreCase("an"))
-            trimmed = str.substring(2) + ", an";
-        else if(bits[0].equalsIgnoreCase("a"))
-            trimmed = str.substring(1) + ", a";
-        else
-            trimmed = str;
-        
-        return trimmed;
-    }
-    
-    public static Pane getInfoElement(String title, String subTitle)
+    public static Pane getInfoElement(String title, String subTitle, Long id, String type, ViewModDelObserver observer)
     {
         Text mTitle = new Text(title);
         mTitle.getStyleClass().addAll("main-title");
@@ -46,10 +29,12 @@ public class UIUtils
         Text sTitle = new Text(subTitle);
         sTitle.getStyleClass().addAll("subtitle");
         
-        VBox box = vLayout(5.0, mTitle, sTitle, hLayoutRight(new ViewModDelTools()));
-        box.getStyleClass().addAll("glass-pane", "simple-display-entry");
+        ViewModDelTools tools = new ViewModDelTools(observer);
+        tools.setId(Long.toString(id));
+        tools.setUserData(type);
         
-        box.setUserData("iidee");
+        VBox box = vLayout(5.0, mTitle, sTitle, hLayoutRight(tools));
+        box.getStyleClass().addAll("glass-pane", "simple-display-entry");
         
         return box;
     }

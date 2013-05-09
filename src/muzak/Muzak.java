@@ -63,7 +63,7 @@ public class Muzak extends Application
             }
         });
         
-        Pane p = UIUtils.getInfoElement("Otsikko", "Alaotsikko");
+        Pane p = UIUtils.getInfoElement("Otsikko", "Alaotsikko", 1L, "ARTIST", m_controller);
         addContent(p);
 
         stage.show();
