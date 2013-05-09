@@ -72,7 +72,7 @@ public class ReleaseDialog extends AbstractPhasedDialog
         ui_mediaList.insertSelectionElements(config.getResources(Resources.LIST_OF_RELEASE_MEDIA));
         setTitle(res.getString("DIALOG_TITLE"));
         
-        super.firstPhase();
+        super.prepare();
     }
     
     @Override

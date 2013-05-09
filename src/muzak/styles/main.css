@@ -22,6 +22,24 @@
 	-fx-alignment:			center-left;
 }
 
+.simple-display-entry
+{
+	-fx-padding:			5.0;
+}
+
+.simple-display-entry .main-title
+{
+	-fx-font-family:		Verdana;
+	-fx-font-size:			22pt;
+	-fx-font-weight:		bold;
+}
+
+.simple-display-entry .subtitle
+{
+	-fx-font-family:		Verdana;
+	-fx-font-size: 			16pt;
+}
+
 .dialog-phase
 {
 	-fx-padding:			10.0;
@@ -33,6 +51,27 @@
         -darkest-black,
         -dark-highlight,
         linear-gradient(to bottom, -light-black 2%, -dark-black 98%);
+}
+
+.tool-button
+{
+	-fx-background-color:	transparent;
+	-fx-border-style:		solid;
+	-fx-border-color:		-dark-highlight;
+	-fx-border-radius:		3;
+}
+
+.tool-button:focused
+{
+	/* Light blue (from caspian.css) glowing effect on focused button. */
+    -fx-background-color:	#0093ff, white;
+    -fx-background-insets:	-1.4, 0, 1, 2;
+    -fx-background-radius:	6.4, 5, 4, 3;
+}
+
+.tool-button:hover
+{
+    -fx-cursor: hand;
 }
 
 .lang-button

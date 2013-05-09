@@ -25,8 +25,6 @@ public abstract class AbstractPhasedDialog extends Stage
     private ArrayList<Pane> m_phases;
     private int             m_phaseIndex;
     private boolean         m_accepted;
-    private boolean         m_discogsRequest;
-    private boolean         m_createDiscogsForm;
     
     /* Base Dialog controls. */
     protected Button    ui_backButton;
@@ -39,8 +37,6 @@ public abstract class AbstractPhasedDialog extends Stage
         m_phases         = new ArrayList<>();
         m_phaseIndex     = 0;
         m_accepted       = false;
-        m_discogsRequest = false;
-        m_createDiscogsForm = true;
         
         ResourceBundle res = config.getResources(Resources.ABSTRACT_PHASED_DIALOG);
         
@@ -81,11 +77,6 @@ public abstract class AbstractPhasedDialog extends Stage
         return m_phaseIndex + 1;
     }
     
-    protected boolean isDiscogsRequested()
-    {
-        return m_discogsRequest;
-    }
-    
     protected Button getDiscogsButton()
     {
         Button b = new Button("Discogs");
@@ -108,7 +99,8 @@ public abstract class AbstractPhasedDialog extends Stage
         m_phases.add(phase);
     }
     
-    protected void firstPhase()
+    /* Set initial phase and permit dialog navigation. */
+    protected void prepare()
     {
         setContentPane(m_phases.get(m_phaseIndex));
         permitNavigation();
@@ -146,21 +138,7 @@ public abstract class AbstractPhasedDialog extends Stage
                 break;
                 
             case "DiscogsButton":
-                if(incPhase())
-                {
-                    /* If this is the first attempt to use Discogs, create respective forms. */
-                    if(m_createDiscogsForm)
-                    {
-                        m_phases.add(m_phaseIndex, createDiscogsResultPane());
-                        m_phases.add(m_phaseIndex+1, m_phases.get(0));
-                        m_createDiscogsForm = false;
-                    }
-                    
-                    System.out.println("Discogs request!");
-                    proceed();
-                    permitNavigation();
-                    setContentPane(m_phases.get(m_phaseIndex));
-                }
+                System.out.println("Discogs request!");
                 break;
                 
             default:
@@ -198,12 +176,6 @@ public abstract class AbstractPhasedDialog extends Stage
                 ui_nextButton.setDisable(false);
             }
         }
-    }
-    
-    private void jumpPhases(int cnt)
-    {
-        while(cnt-- > 0)
-            incPhase();
     }
     
     private boolean incPhase()

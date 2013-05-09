@@ -23,6 +23,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class Muzak extends Application
 {
@@ -53,9 +54,26 @@ public class Muzak extends Application
         
         stage.setTitle(res.getString("MAIN_TITLE"));
         
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>()
+        {
+            @Override
+            public void handle(WindowEvent arg0)
+            {
+                m_controller.quit();
+            }
+        });
+        
+        Pane p = UIUtils.getSimpleDisplayElement("Otsikko", "Alaotsikko");
+        addContent(p);
+
         stage.show();
     }
-
+    
+    public void addContent(Pane content)
+    {
+        ui_contentPane.getChildren().add(content);
+    }
+    
     private MenuBar createMenuBar(ResourceBundle res)
     {
         EventHandler<ActionEvent> handler = new EventHandler<ActionEvent>()

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import muzakModel.Artist;
 import muzakModel.MuzakDataModel;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.MenuItem;
@@ -52,16 +53,11 @@ public class MainControl
         return m_config.changeLangToEN();
     }
     
-//    public boolean changeLocale(String iso639code)
-//    {
-//        Locale other = new Locale(iso639code);
-//
-//        if(this.m_locale.getLanguage().equals(other.getLanguage())) return false;
-//        
-//        this.m_locale = other;
-//        
-//        return true;
-//    }
+    public void quit()
+    {
+        System.out.println("Quitting...");
+        Platform.exit();
+    }
     
     public void handleSearchAction(String searchString, String filter)
     {
@@ -76,6 +72,7 @@ public class MainControl
         {
         case "ExitRequest":
             System.out.println(((MenuItem)event.getSource()).getId());
+            quit();
             break;
         case "AddArtistRequest":
             System.out.println(((MenuItem)event.getSource()).getId());

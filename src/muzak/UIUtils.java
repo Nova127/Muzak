@@ -1,20 +1,22 @@
 package muzak;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.ResourceBundle;
-import java.util.TreeSet;
+
+import muzak.mycomp.ViewModDelTools;
 
 import javafx.collections.FXCollections;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Control;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 
 public class UIUtils
 {
@@ -29,11 +31,33 @@ public class UIUtils
         else if(bits[0].equalsIgnoreCase("an"))
             trimmed = str.substring(2) + ", an";
         else if(bits[0].equalsIgnoreCase("a"))
-            trimmed = str.substring(1) + ", an";
+            trimmed = str.substring(1) + ", a";
         else
             trimmed = str;
         
         return trimmed;
+    }
+    
+    public static Pane getSimpleDisplayElement(String title, String subTitle)
+    {
+        Text mTitle = new Text(title);
+        mTitle.getStyleClass().addAll("main-title");
+        
+        Text sTitle = new Text(subTitle);
+        sTitle.getStyleClass().addAll("subtitle");
+        
+        VBox box = vLayout(5.0, mTitle, sTitle, hLayoutRight(new ViewModDelTools()));
+        box.getStyleClass().addAll("glass-pane", "simple-display-entry");
+        
+        box.setUserData("iidee");
+        
+        return box;
+    }
+    
+    public static void setFixedSize(Control component, double value)
+    {
+        component.setMinSize(value, value);
+        component.setMaxSize(component.getMinWidth(), component.getMinHeight());
     }
     
     public static void populate(ComboBox<KeyValueCombo> cbox, ResourceBundle res)
@@ -70,6 +94,21 @@ public class UIUtils
         box.getChildren().addAll(nodes);
         
         return box;
+    }
+    
+    public static HBox hLayoutRight(Node node)
+    {
+        return hLayout(0, getHStretcher(), node);
+    }
+    
+    public static HBox hLayoutLeft(Node node)
+    {
+        return hLayout(0, node, getHStretcher());
+    }
+    
+    public static HBox hLayoutCentered(Node node)
+    {
+        return hLayout(0, UIUtils.getHStretcher(), node, UIUtils.getHStretcher());
     }
     
     public static VBox vLayout(double spacing, Node... nodes)
