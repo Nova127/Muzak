@@ -71,7 +71,7 @@
 
 .tool-button:hover
 {
-    -fx-cursor: hand;
+    -fx-cursor:				hand;
 }
 
 .lang-button
@@ -79,3 +79,11 @@
 	-fx-background-color:	transparent;
 	-fx-text-fill:			white;
 }
+
+.lang-button:hover
+{
+	-fx-cursor:				hand;
+}
+
+
+

@@ -38,7 +38,7 @@ public class UIUtils
         return trimmed;
     }
     
-    public static Pane getSimpleDisplayElement(String title, String subTitle)
+    public static Pane getInfoElement(String title, String subTitle)
     {
         Text mTitle = new Text(title);
         mTitle.getStyleClass().addAll("main-title");
