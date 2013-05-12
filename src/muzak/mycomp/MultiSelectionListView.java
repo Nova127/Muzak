@@ -4,8 +4,10 @@ package muzak.mycomp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ResourceBundle;
+import java.util.TreeSet;
 
 import muzak.KeyValueCombo;
+import muzakModel.DataModelObject;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -13,7 +15,10 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.util.Callback;
 
@@ -27,6 +32,13 @@ class SelectionElement implements Comparable<SelectionElement>
     {
         this.techKey        = new SimpleStringProperty(techKey);
         this.displayKey     = new SimpleStringProperty(displayKey);
+        this.selectionValue = new SimpleBooleanProperty(false);
+    }
+    
+    public SelectionElement(KeyValueCombo kvcombo)
+    {
+        this.techKey        = new SimpleStringProperty(kvcombo.getKey());
+        this.displayKey     = new SimpleStringProperty(kvcombo.getValue());
         this.selectionValue = new SimpleBooleanProperty(false);
     }
     
@@ -61,26 +73,69 @@ class SelectionElement implements Comparable<SelectionElement>
     }
 }
 
-public class MultiSelectionListView extends ListView<SelectionElement>
+class RadioCell extends ListCell<SelectionElement>
 {
-    //ObservableList<SelectionElement> m_elems = null;
+    RadioButton ui_radio = new RadioButton();
     
-    public MultiSelectionListView()
+    public RadioCell(ToggleGroup tgroup)
     {
-/*        m_elems = FXCollections.observableArrayList(elems);
-        
-        this.setItems(m_elems);*/
-        
-        Callback<SelectionElement, ObservableValue<Boolean>> cb = new Callback<SelectionElement, ObservableValue<Boolean>>()
+        super();
+        ui_radio.setToggleGroup(tgroup);
+    }
+    
+    @Override
+    public void updateItem(SelectionElement item, boolean empty)
+    {
+        super.updateItem(item, empty);
+        if(empty)
         {
-            @Override
-            public ObservableValue<Boolean> call(SelectionElement elem)
-            {
-                return elem.getSelectionValueProperty();
-            }
-        };
+            setGraphic(null);
+        }
+        else
+        {
+            ui_radio.setText(item != null ? item.getDisplayKey() : "");
+            ui_radio.setUserData(item);
+            setGraphic(ui_radio);
+        }
+    }
+}
+
+public class MultiSelectionListView extends ListView<SelectionElement>// implements SelectionListView
+{
+    private boolean     m_multiSelectionMode = true;
+    private ToggleGroup m_toggles            = new ToggleGroup();
+    
+    public MultiSelectionListView(boolean multiSelectionMode)
+    {
+        m_multiSelectionMode = multiSelectionMode;
         
-        this.setCellFactory(CheckBoxListCell.forListView(cb));
+        setupCellFactory();
+    }
+    
+    public void switchToMultiMode()
+    {
+        m_multiSelectionMode = true;
+        this.setCellFactory(null);
+        
+        setupCellFactory();
+    }
+    
+    public void switchToSingleMode()
+    {
+        m_multiSelectionMode = false;
+        this.setCellFactory(null);
+        
+        setupCellFactory();
+    }
+    
+    public boolean isMultiModeOn()
+    {
+        return m_multiSelectionMode;
+    }
+    
+    public boolean isSingleModeOn()
+    {
+        return !m_multiSelectionMode;
     }
     
     public void insertSelectionElements(ResourceBundle res)
@@ -94,17 +149,97 @@ public class MultiSelectionListView extends ListView<SelectionElement>
         this.setItems(FXCollections.observableArrayList(items));
     }
     
+    public void insertSelectionElements(TreeSet<DataModelObject> combos)
+    {
+        ArrayList<SelectionElement> items = new ArrayList<>();
+        for(DataModelObject dmo : combos)
+            items.add(new SelectionElement(dmo.getIDString(), dmo.getShortInfoString()));
+        
+        this.setItems(FXCollections.observableArrayList(items));
+    }
+    
     public ArrayList<KeyValueCombo> getSelected()
     {
         ArrayList<KeyValueCombo> selections = new ArrayList<>();
         
-        for(SelectionElement e : this.getItems())
+        if(m_multiSelectionMode)
         {
-            if(e.getSelectionValue())
-                selections.add(new KeyValueCombo(e.getTechKey(), e.getDisplayKey()));
+            for(SelectionElement e : this.getItems())
+            {
+                if(e.getSelectionValue())
+                    selections.add(new KeyValueCombo(e.getTechKey(), e.getDisplayKey()));
+            }
+        }
+        else
+        {
+            RadioButton opt = (RadioButton)m_toggles.getSelectedToggle();
+            if(opt != null)
+            {
+                SelectionElement se = (SelectionElement)opt.getUserData();
+                if(se != null)
+                {
+                    selections.add(new KeyValueCombo(se.getTechKey(), se.getDisplayKey()));
+                }
+            }
         }
         
         return selections;
+    }
+    
+    public ArrayList<String> getSelectedKeys()
+    {
+        ArrayList<String> keys = new ArrayList<>();
+        
+        if(m_multiSelectionMode)
+        {
+            for(SelectionElement e : this.getItems())
+            {
+                if(e.getSelectionValue())
+                    keys.add(e.getTechKey());
+            }
+        }
+        else
+        {
+            RadioButton opt = (RadioButton)m_toggles.getSelectedToggle();
+            if(opt != null)
+            {
+                SelectionElement se = (SelectionElement)opt.getUserData();
+                if(se != null)
+                {
+                    keys.add(se.getTechKey());
+                }
+            }
+        }
+        
+        return keys;
+    }
+    
+    private void setupCellFactory()
+    {
+        if(m_multiSelectionMode)
+        {
+            Callback<SelectionElement, ObservableValue<Boolean>> cb = new Callback<SelectionElement, ObservableValue<Boolean>>()
+            {
+                @Override
+                public ObservableValue<Boolean> call(SelectionElement elem)
+                {
+                    return elem.getSelectionValueProperty();
+                }
+            };
+
+            this.setCellFactory(CheckBoxListCell.forListView(cb));
+        }
+        else
+        {
+            this.setCellFactory(new Callback<ListView<SelectionElement>, ListCell<SelectionElement>>()
+            {
+                @Override
+                public RadioCell call(ListView<SelectionElement> arg0)
+                {
+                    return new RadioCell(m_toggles);
+                }
+            });
+        }
     }
 }
 

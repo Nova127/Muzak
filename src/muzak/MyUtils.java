@@ -1,7 +1,29 @@
 package muzak;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 public class MyUtils
 {
+    public static String asValueString(ArrayList<KeyValueCombo> combos, String separator)
+    {
+        String res = "";
+        
+        if(combos != null && !combos.isEmpty())
+        {
+            String tmp = "";
+            Iterator<KeyValueCombo> i = combos.iterator();
+            
+            while(i.hasNext())
+            {
+                tmp = i.next().toString(); // Moves current to next
+                res += (i.hasNext()) ? tmp + separator : tmp;
+            }
+        }
+        
+        return res;
+    }
+    
     public static String trimWhitespaces(String input)
     {
         /* Remove leading and trailing whitespaces: */
@@ -9,6 +31,12 @@ public class MyUtils
         
         /* Replace possible whitespace character combinations with single space: */
         return input.replaceAll("\\s+", " ");
+    }
+    
+    public static String trimToAlphanumeric(String input)
+    {
+        /* Remove all non-alphanumeric characters. */
+        return input.replaceAll("[^a-zA-Z0-9]", "");
     }
     
     public static String artistTechName(String input)

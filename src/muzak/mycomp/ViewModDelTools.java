@@ -1,6 +1,7 @@
 package muzak.mycomp;
 
 import muzak.UIUtils;
+import muzakModel.DataModelObject;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
@@ -30,7 +31,7 @@ public class ViewModDelTools extends HBox
             @Override
             public void handle(ActionEvent arg0)
             {
-                observer.handleViewRequest(getId(), getUserData());
+                observer.handleViewRequest((DataModelObject)getUserData());
             }
         });
         
@@ -39,7 +40,7 @@ public class ViewModDelTools extends HBox
             @Override
             public void handle(ActionEvent arg0)
             {
-                observer.handleModifyRequest(getId(), getUserData());
+                observer.handleModifyRequest((DataModelObject)getUserData());
             }
         });
         
@@ -48,7 +49,7 @@ public class ViewModDelTools extends HBox
             @Override
             public void handle(ActionEvent arg0)
             {
-                observer.handleDeleteRequest(getId(), getUserData());
+                observer.handleDeleteRequest((DataModelObject)getUserData());
             }
         });
     }

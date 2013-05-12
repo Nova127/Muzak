@@ -25,12 +25,13 @@
 .simple-display-entry
 {
 	-fx-padding:			5.0;
+	-fx-alignment:			center-left;
 }
 
 .simple-display-entry .main-title
 {
 	-fx-font-family:		Verdana;
-	-fx-font-size:			22pt;
+	-fx-font-size:			18pt;
 	-fx-font-weight:		bold;
 }
 

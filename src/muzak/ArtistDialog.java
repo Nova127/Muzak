@@ -102,7 +102,7 @@ public class ArtistDialog extends AbstractPhasedDialog
             return aliases;
         
         for(String s : ui_aliasField.getText().split(";"))
-            aliases.add(s.trim());
+            aliases.add(MyUtils.trimWhitespaces(s));
         
         return aliases;
     }
@@ -110,24 +110,20 @@ public class ArtistDialog extends AbstractPhasedDialog
     public String getOriginCode()
     {
         KeyValueCombo kvc = ui_originChoice.getSelectionModel().getSelectedItem();
-        if(kvc != null)
-            return kvc.getKey();
-        else
-            return "";
+        
+        return (kvc != null ? kvc.getKey() : "");
     }
     
     public int getFounded()
     {
         String val = ui_foundedChoice.getSelectionModel().getSelectedItem();
-        if(val != null)
-            return Integer.parseInt(val);
-        else
-            return -1;
+
+        return (val != null ? Integer.parseInt(val) : -1);
     }
     
     public String getComment()
     {
-        return MyUtils.trimArticles(ui_commentArea.getText());
+        return MyUtils.trimWhitespaces(ui_commentArea.getText());
     }
     
     @Override
@@ -270,7 +266,7 @@ public class ArtistDialog extends AbstractPhasedDialog
         pane.getColumnConstraints().add(col0);
         
         pane.add(new Label(res.getString("TYPE")), 0, 0);
-        pane.add(new Label(res.getString("NAME")), 0, 1);
+        pane.add(new Label(res.getString("NAME") + " " + res.getString("MANDATORY")), 0, 1);
         pane.add(new Label(res.getString("TECH_NAME")), 0, 2);
         pane.add(new Label(res.getString("ALIASES")), 0, 3);
         pane.add(UIUtils.getHStretcher(), 0, 4);

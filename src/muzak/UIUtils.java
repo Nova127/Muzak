@@ -6,8 +6,10 @@ import java.util.ResourceBundle;
 
 import muzak.mycomp.ViewModDelObserver;
 import muzak.mycomp.ViewModDelTools;
+import muzakModel.DataModelObject;
 
 import javafx.collections.FXCollections;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
@@ -21,19 +23,15 @@ import javafx.scene.text.Text;
 
 public class UIUtils
 {
-    public static Pane getInfoElement(String title, String subTitle, Long id, String type, ViewModDelObserver observer)
+    public static Pane getListInfoElement(DataModelObject dmo, ViewModDelObserver observer)
     {
-        Text mTitle = new Text(title);
-        mTitle.getStyleClass().addAll("main-title");
-        
-        Text sTitle = new Text(subTitle);
-        sTitle.getStyleClass().addAll("subtitle");
+        Text text = new Text(dmo.getShortInfoString());
+        text.getStyleClass().addAll("main-title");
         
         ViewModDelTools tools = new ViewModDelTools(observer);
-        tools.setId(Long.toString(id));
-        tools.setUserData(type);
+        tools.setUserData(dmo);
         
-        VBox box = vLayout(5.0, mTitle, sTitle, hLayoutRight(tools));
+        HBox box = hLayout(10.0, text, getHStretcher(), tools);
         box.getStyleClass().addAll("glass-pane", "simple-display-entry");
         
         return box;
@@ -69,6 +67,14 @@ public class UIUtils
     {
         Region stretcher = new Region();
         HBox.setHgrow(stretcher, Priority.ALWAYS);
+        
+        return stretcher;
+    }
+    
+    public static Region getVStretcher()
+    {
+        Region stretcher = new Region();
+        VBox.setVgrow(stretcher, Priority.ALWAYS);
         
         return stretcher;
     }

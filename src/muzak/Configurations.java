@@ -25,7 +25,12 @@ public interface Configurations
     public int getReleasedStartValue();
     public int getReleasedEndValue();
     
+    public int getMinRatingValue();
+    public int getMaxRatingValue();
+    
     public ResourceBundle getResources(Resources resource);
+    
+    public String mapCodeToCountry(String code);
     
     public boolean changeLangToEN();
     public boolean changeLangToFI();

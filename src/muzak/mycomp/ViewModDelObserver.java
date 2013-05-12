@@ -1,10 +1,12 @@
 
 package muzak.mycomp;
 
+import muzakModel.DataModelObject;
+
 
 public interface ViewModDelObserver
 {
-    public void handleViewRequest(String idString, Object typeObject);
-    public void handleModifyRequest(String idString, Object typeObject);
-    public void handleDeleteRequest(String idString, Object typeObject);
+    public void handleViewRequest(DataModelObject dmo);
+    public void handleModifyRequest(DataModelObject dmo);
+    public void handleDeleteRequest(DataModelObject dmo);
 }

@@ -74,7 +74,7 @@ public abstract class AbstractPhasedDialog extends Stage
     
     protected int getCurrentPhase()
     {
-        return m_phaseIndex + 1;
+        return m_phaseIndex;
     }
     
     protected Button getDiscogsButton()
@@ -97,6 +97,13 @@ public abstract class AbstractPhasedDialog extends Stage
     protected void addPhase(Pane phase)
     {
         m_phases.add(phase);
+    }
+    
+    protected Pane getPhase(int phaseIndex)
+    {
+        if(phaseIndex < 0 || phaseIndex >= m_phases.size()) return null;
+        
+        return m_phases.get(phaseIndex);
     }
     
     /* Set initial phase and permit dialog navigation. */

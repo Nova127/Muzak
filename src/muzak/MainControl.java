@@ -2,10 +2,15 @@
 package muzak;
 
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 import muzak.mycomp.ViewModDelObserver;
 import muzakModel.Artist;
+import muzakModel.DataModelObject;
 import muzakModel.MuzakDataModel;
+import muzakModel.MuzakDataModel.Order;
+import muzakModel.MuzakDataModel.Tables;
+import muzakModel.Release;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -15,13 +20,14 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import muzakModel.NotUniqueSignatureException;
 
-public class MainControl implements ViewModDelObserver
+public class MainControl implements DialogObserver, ViewModDelObserver
 {
     private MuzakDataModel m_model;
     private MuzakConfig m_config;
     /* Initialize 'default' locale. */
     //private Locale m_locale = new Locale("fi");
     private Stage mainWindow;
+    private Muzak muzak;
     
     public MainControl()
     {
@@ -33,6 +39,11 @@ public class MainControl implements ViewModDelObserver
     public void setMainWindow(final Stage win)
     {
         mainWindow = win;
+    }
+    
+    public void setMuzak(Muzak m)
+    {
+        muzak = m;
     }
     
     public Stage getMainWindow()
@@ -62,21 +73,37 @@ public class MainControl implements ViewModDelObserver
     }
     
     @Override
-    public void handleViewRequest(String idString, Object typeObject)
+    public void handleViewRequest(DataModelObject dmo)
     {
-        System.out.println("View Request from ID: " + idString + " of " + typeObject.toString());
+        System.out.println("View Request from ID: " + dmo.getID() + " of " + dmo.getClass().getSimpleName());
     }
 
     @Override
-    public void handleModifyRequest(String idString, Object typeObject)
+    public void handleModifyRequest(DataModelObject dmo)
     {
-        System.out.println("Modify Request from ID: " + idString + " of " + typeObject.toString());
+        System.out.println("Modify Request from ID: " + dmo.getID() + " of " + dmo.getClass().getSimpleName());
     }
 
     @Override
-    public void handleDeleteRequest(String idString, Object typeObject)
+    public void handleDeleteRequest(DataModelObject dmo)
     {
-        System.out.println("Delete Request from ID: " + idString + " of " + typeObject.toString());
+        System.out.println("Delete Request from ID: " + dmo.getID() + " of " + dmo.getClass().getSimpleName());
+    }
+    
+    @Override
+    public TreeSet<DataModelObject> getArtists()
+    {
+        @SuppressWarnings("unchecked")
+        TreeSet<DataModelObject> set = (TreeSet<DataModelObject>)m_model.selectAll(Tables.ARTISTS, Order.ALPHABETICAL, false);
+        
+        return set;
+    }
+    
+    @Override
+    public void createArtist(DialogCallback callback)
+    {
+        showArtistDialog(callback.getOwningStage());
+        callback.update();
     }
     
     public void handleSearchAction(String searchString, String filter)
@@ -96,7 +123,7 @@ public class MainControl implements ViewModDelObserver
             break;
         case "AddArtistRequest":
             System.out.println(((MenuItem)event.getSource()).getId());
-            showArtistDialog();
+            showArtistDialog(mainWindow);
             break;
         case "AddReleaseRequest":
             System.out.println(((MenuItem)event.getSource()).getId());
@@ -144,7 +171,6 @@ public class MainControl implements ViewModDelObserver
 
             case "AddArtistRequest":
                 System.out.println("Add Artist requested from Main Window.");
-                showArtistDialog();
                 break;
 
             case "AddReleaseRequest":
@@ -163,58 +189,85 @@ public class MainControl implements ViewModDelObserver
     
     private void showReleaseDialog()
     {
-        ReleaseDialog dialog = new ReleaseDialog(m_config);
-        dialog.initModality(Modality.WINDOW_MODAL);
-        dialog.initOwner(mainWindow);
-        dialog.execute();
-    }
-    
-    private void showArtistDialog()
-    {
-        ArtistDialog dialog = new ArtistDialog(m_config);
+        ReleaseDialog dialog = new ReleaseDialog(m_config, this);
         dialog.initModality(Modality.WINDOW_MODAL);
         dialog.initOwner(mainWindow);
         
         if(dialog.execute())
         {
-            String type = dialog.getType();
-            String name = dialog.getName();
-            String tech = dialog.getTechName();
-            ArrayList<String> aliases = dialog.getAliases();
-            String ccode = dialog.getOriginCode();
-            int founded = dialog.getFounded();
-            String comment = dialog.getComment();
+            Release release = MuzakDataModel.createRelease();
+            release.setTitle(dialog.getReleaseTitle());
+            release.setTechTitle(dialog.getTechTitle());
+            release.setAltTitle(dialog.getAlternateTitle());
+            release.setCatalogNumber(dialog.getCatalogNumber());
+            release.setBarCode(dialog.getBarcode());
+            release.addType(dialog.getTypeKeys());
+            release.addMedia(dialog.getMediaKeys());
+            release.setOriginalRelease(dialog.getIsOriginal());
+            release.setExtendedEdition(dialog.getIsExtended());
+            release.setCurYear(dialog.getCurrentYear());
+            release.setOrgYear(dialog.getOriginalYear());
+            release.setDiscs(dialog.getDiscCount());
+            release.setStyleKey(dialog.getStyleKey());
+            release.setRating(dialog.getRating());
+            release.setComment(dialog.getComment());
             
-            if(name.isEmpty() || tech.isEmpty())
+            // TODO: Ehkäpä jokin hivenen nerokkaampi poikkeustenkäsittely lienee paikallaan. Vai häh?
+            try
             {
-                
+                m_model.insert(release);
             }
-            else
+            catch(IllegalArgumentException e)
             {
-                Artist artist = MuzakDataModel.createArtist();
-                artist.setType(type);
-                artist.setName(name);
-                artist.setTechName(tech);
-                if(!ccode.isEmpty())
-                    artist.setCountryCode(ccode);
-                if(founded >= m_config.getFoundedStartValue())
-                    artist.setFounded(founded);
-                artist.setComment(comment);
-
-                for(String s : aliases)
-                    artist.addAlias(s);
-                
-                try
-                {
-                    m_model.insertArtist(artist);
-                }
-                catch(IllegalArgumentException | NotUniqueSignatureException e)
-                {
-                    
-                }
+                e.printStackTrace();
+            }
+            catch(NotUniqueSignatureException e)
+            {
+                e.printStackTrace();
             }
         }
         else
-            System.out.println("Dialog rejected!");
+        {
+            
+        }
+        
+        dialog.output();
+    }
+    
+    private void showArtistDialog(Stage owner)
+    {
+        ArtistDialog dialog = new ArtistDialog(m_config);
+        dialog.initModality(Modality.WINDOW_MODAL);
+        dialog.initOwner(owner);
+        
+        if(dialog.execute())
+        {
+            Artist artist = MuzakDataModel.createArtist();
+            artist.setType(dialog.getType());
+            artist.setName(dialog.getName());
+            artist.setTechName(dialog.getTechName());
+            artist.addAlias(dialog.getAliases());
+            artist.setCountryCode(dialog.getOriginCode());
+            artist.setFounded(dialog.getFounded());
+            artist.setComment(dialog.getComment());
+            
+            // TODO: Ehkäpä jokin hivenen nerokkaampi poikkeustenkäsittely lienee paikallaan. Vai häh?
+            try
+            {
+                m_model.insert(artist);
+            }
+            catch(IllegalArgumentException e)
+            {
+                e.printStackTrace();
+            }
+            catch(NotUniqueSignatureException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        else
+        {
+            
+        }
     }
 }

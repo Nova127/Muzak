@@ -13,11 +13,15 @@ class MuzakConfig implements Configurations
     private static final int DEF_FOUNDED_END_VALUE = 0;
     private static final int DEF_RELEASED_START_VALUE = 1950;
     private static final int DEF_RELEASED_END_VALUE = 0;
+    private static final int DEF_MIN_RATING_VALUE = 0;
+    private static final int DEF_MAX_RATING_VALUE = 5;
     
     private int m_foundedStartValue;
     private int m_foundedEndValue;
     private int m_releasedStartValue;
     private int m_releasedEndValue;
+    private int m_minRatingValue;
+    private int m_maxRatingValue;
     
     public MuzakConfig()
     {
@@ -27,6 +31,8 @@ class MuzakConfig implements Configurations
         m_foundedEndValue = DEF_FOUNDED_END_VALUE;
         m_releasedStartValue = DEF_RELEASED_START_VALUE;
         m_releasedEndValue = DEF_RELEASED_END_VALUE;
+        m_minRatingValue = DEF_MIN_RATING_VALUE;
+        m_maxRatingValue = DEF_MAX_RATING_VALUE;
     }
     
     @Override
@@ -57,6 +63,18 @@ class MuzakConfig implements Configurations
             return getCurrentYear();
         
         return m_releasedEndValue;
+    }
+    
+    @Override
+    public int getMinRatingValue()
+    {
+        return m_minRatingValue;
+    }
+    
+    @Override
+    public int getMaxRatingValue()
+    {
+        return m_maxRatingValue;
     }
     
     @Override
@@ -106,6 +124,12 @@ class MuzakConfig implements Configurations
         return ResourceBundle.getBundle(baseName, m_locale);
     }
     
+    @Override
+    public String mapCodeToCountry(String code)
+    {
+        return getResources(Resources.LIST_OF_COUNTRIES).getString(code);
+    }
+    
     public void setFoundedStartValue(int value)
     {
         m_foundedStartValue = value;
@@ -114,6 +138,26 @@ class MuzakConfig implements Configurations
     public void setFoundedEndValue(int value)
     {
         m_foundedEndValue = value;
+    }
+    
+    public void setReleasedStartValue(int value)
+    {
+        m_releasedStartValue = value;
+    }
+    
+    public void setReleasedEndValue(int value)
+    {
+        m_releasedEndValue = value;
+    }
+    
+    public void setMinRatingValue(int value)
+    {
+        m_minRatingValue = value;
+    }
+    
+    public void setMaxRatingValue(int value)
+    {
+        m_maxRatingValue = value;
     }
     
     @Override

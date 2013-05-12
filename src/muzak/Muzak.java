@@ -51,6 +51,7 @@ public class Muzak extends Application
         stage.setHeight(0.75 * screen.getHeight());
         
         m_controller.setMainWindow(stage);
+        m_controller.setMuzak(this);
         
         stage.setTitle(res.getString("MAIN_TITLE"));
         
@@ -63,8 +64,8 @@ public class Muzak extends Application
             }
         });
         
-        Pane p = UIUtils.getInfoElement("Otsikko", "Alaotsikko", 1L, "ARTIST", m_controller);
-        addContent(p);
+//        Pane p = UIUtils.getInfoElement("Otsikko", "Alaotsikko", 1L, "ARTIST", m_controller);
+//        addContent(p);
 
         stage.show();
     }
