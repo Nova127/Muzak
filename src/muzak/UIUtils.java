@@ -99,7 +99,7 @@ public class UIUtils
     
     public static HBox hLayoutCentered(Node node)
     {
-        return hLayout(0, UIUtils.getHStretcher(), node, UIUtils.getHStretcher());
+        return hLayout(0, getHStretcher(), node, getHStretcher());
     }
     
     public static VBox vLayout(double spacing, Node... nodes)
@@ -108,6 +108,16 @@ public class UIUtils
         box.getChildren().addAll(nodes);
         
         return box;
+    }
+    
+    public static VBox vLayoutCentered(Node node)
+    {
+        return vLayout(0, getVStretcher(), node, getVStretcher());
+    }
+    
+    public static VBox vLayoutCenterCenter(Node node)
+    {
+        return vLayoutCentered(hLayoutCentered(node));
     }
     
     public static ColumnConstraints getColumnConstraint(double relativeWidth)

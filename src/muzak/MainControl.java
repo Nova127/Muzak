@@ -4,6 +4,7 @@ package muzak;
 import discogs.Discogs;
 import discogs.DiscogsWorker;
 import java.io.IOException;
+import java.lang.Thread.State;
 import java.util.ArrayList;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -34,7 +35,7 @@ public class MainControl implements DialogObserver, ViewModDelObserver
     //private Locale m_locale = new Locale("fi");
     private Stage mainWindow;
     private Muzak muzak;
-    private Discogs m_discogs = new DiscogsWorker();
+    private DiscogsWorker m_discogs;
     
     public MainControl()
     {
@@ -107,8 +108,11 @@ public class MainControl implements DialogObserver, ViewModDelObserver
     }
     
     @Override
-    public ArrayList<String> getDiscogsResults()
+    public ArrayList<KeyValueCombo> getDiscogsResults()
     {
+        if(m_discogs == null)
+            return new ArrayList<>();
+            
         return m_discogs.getReleases();
     }
     
@@ -122,9 +126,10 @@ public class MainControl implements DialogObserver, ViewModDelObserver
     @Override
     public void discogsRequest(DialogCallback callback)
     {
+        m_discogs = new DiscogsWorker();
         m_discogs.searchReleases(callback.getQueryTitle(), callback.getQueryCatNumber(), callback.getQueryBarcode());
         //System.out.println("MainControl / Discogs request");
-        showDiscogsResultsDialog(callback.getOwningStage());
+        showDiscogsResultsDialog(callback.getOwningStage(), m_discogs);
     }
     
     public void handleSearchAction(String searchString, String filter)
@@ -207,23 +212,22 @@ public class MainControl implements DialogObserver, ViewModDelObserver
             break;
         } 
     }
-    private void showDiscogsResultsDialog(Stage owner)
+    private void showDiscogsResultsDialog(Stage owner, DiscogsWorker worker)
     {
         DiscogsResultsDialog dialog = new DiscogsResultsDialog(m_config, this);
         dialog.initModality(Modality.WINDOW_MODAL);
         dialog.initOwner(owner);
-        m_discogs.setOnFinished(dialog);
-        try {
-            m_discogs.request();
-        } catch (IOException ex) {
-            Logger.getLogger(MainControl.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ParseException ex) {
-            Logger.getLogger(MainControl.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
+        worker.setOnFinished(dialog);
+        worker.start();
         
         if(dialog.execute())
         {
-            
+        }
+        else
+        {
+            if(worker.getState() != State.TERMINATED)
+                worker.interrupt();
         }
     }
     

@@ -65,10 +65,22 @@ public abstract class AbstractPhasedDialog extends Stage implements DialogCallba
         return this;
     }
     
-    @Override
-    public void update()
-    {
-        
+    @Override // from DialogCallback
+    public void update() {}
+    
+    @Override // from DialogCallback
+    public String getQueryTitle() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override // from DialogCallback
+    public String getQueryCatNumber() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override // from DialogCallback
+    public String getQueryBarcode() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     /* This abstract method is called whenever user proceeds to next phase
@@ -111,6 +123,11 @@ public abstract class AbstractPhasedDialog extends Stage implements DialogCallba
     protected void addPhase(Pane phase)
     {
         m_phases.add(phase);
+    }
+    
+    protected void replaceCurrentPhase(Pane phase)
+    {
+        
     }
     
     protected Pane getPhase(int phaseIndex)
@@ -160,7 +177,6 @@ public abstract class AbstractPhasedDialog extends Stage implements DialogCallba
                 
             case "DiscogsButton":
                 m_observer.discogsRequest(this);
-          
                 break;
                 
             default:

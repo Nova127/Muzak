@@ -2,15 +2,12 @@
 package muzak;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.ResourceBundle;
 
-import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
@@ -19,7 +16,6 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.text.Text;
 import muzak.Configurations.Resources;
@@ -138,13 +134,7 @@ public class ArtistDialog extends AbstractPhasedDialog
     {
     }
     
-    @Override
-    public void showDiscogsResultsDialog(final Configurations config)
-    {
-        
-    }
-    
-    protected String makeTechName()
+    private String makeTechName()
     {
         String tech = "";
         String name = ui_nameField.getText();
@@ -285,20 +275,5 @@ public class ArtistDialog extends AbstractPhasedDialog
         pane.add(UIUtils.getHStretcher(), 1, 8);
         
         return pane;
-    }
-
-    @Override
-    public String getQueryTitle() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getQueryCatNumber() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getQueryBarcode() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

@@ -6,7 +6,7 @@ public interface DialogCallback
 {
     Stage getOwningStage();
     void update();
-    void showDiscogsResultsDialog(final Configurations config);
+    //void showDiscogsResultsDialog(final Configurations config);
     
     String getQueryTitle();
     String getQueryCatNumber();

@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 import java.util.TreeSet;
 
 import muzak.KeyValueCombo;
+import muzak.UIUtils;
 import muzakModel.DataModelObject;
 
 import javafx.beans.property.BooleanProperty;
@@ -15,11 +16,14 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.CheckBoxListCell;
+import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 
 class SelectionElement implements Comparable<SelectionElement>
@@ -76,6 +80,7 @@ class SelectionElement implements Comparable<SelectionElement>
 class RadioCell extends ListCell<SelectionElement>
 {
     RadioButton ui_radio = new RadioButton();
+    Label       ui_label = new Label();
     
     public RadioCell(ToggleGroup tgroup)
     {
@@ -93,9 +98,11 @@ class RadioCell extends ListCell<SelectionElement>
         }
         else
         {
-            ui_radio.setText(item != null ? item.getDisplayKey() : "");
+            ui_label.setText(item != null ? item.getDisplayKey() : "");
             ui_radio.setUserData(item);
-            setGraphic(ui_radio);
+            HBox box = UIUtils.hLayout(8.0, ui_radio, ui_label);
+            box.setAlignment(Pos.CENTER_LEFT);
+            setGraphic(box);
         }
     }
 }
@@ -157,11 +164,12 @@ public class MultiSelectionListView extends ListView<SelectionElement>// impleme
         
         this.setItems(FXCollections.observableArrayList(items));
     }
-    public void insertSelectionElements(ArrayList<String> list)
+    
+    public void insertSelectionElements(ArrayList<KeyValueCombo> combos)
     {
         ArrayList<SelectionElement> items = new ArrayList<>();
-        for(String dmo : list)
-            items.add(new SelectionElement(dmo, dmo));
+        for(KeyValueCombo kvc : combos)
+            items.add(new SelectionElement(kvc.getKey(), kvc.getValue()));
         
         this.setItems(FXCollections.observableArrayList(items));
     }

@@ -96,6 +96,24 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
             ui_performersChoice.insertSelectionElements(m_observer.getArtists());
     }
     
+    @Override // from DialogCallback
+    public String getQueryTitle()
+    {
+        return getReleaseTitle();
+    }
+
+    @Override // from DialogCallback
+    public String getQueryCatNumber()
+    {
+        return MyUtils.trimToAlphanumeric(getCatalogNumber());
+    }
+
+    @Override // from DialogCallback
+    public String getQueryBarcode()
+    {
+        return getBarcode();
+    }
+    
     public String getReleaseTitle()
     {
         return MyUtils.trimWhitespaces(ui_titleField.getText());
@@ -193,24 +211,6 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
     }
     
     @Override
-    public String getQueryTitle()
-    {
-        return getReleaseTitle();
-    }
-
-    @Override
-    public String getQueryCatNumber()
-    {
-        return MyUtils.trimToAlphanumeric(getCatalogNumber());
-    }
-
-    @Override
-    public String getQueryBarcode()
-    {
-        return getBarcode();
-    }
-    
-    @Override
     protected void proceed()
     {
         if(getCurrentPhase() == 1) /* Phase 1 - Select performers for the release. */
@@ -248,13 +248,6 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
     @Override
     protected void rollBack()
     {
-    }
-    
-    @Override
-    public void showDiscogsResultsDialog(final Configurations config)
-    {
-        
-        
     }
     
     private void relayNewArtistRequest()
