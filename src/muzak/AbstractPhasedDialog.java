@@ -20,8 +20,9 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-public abstract class AbstractPhasedDialog extends Stage
+public abstract class AbstractPhasedDialog extends Stage implements DialogCallback
 {
+    protected DialogObserver          m_observer;
     private ArrayList<Pane> m_phases;
     private int             m_phaseIndex;
     private boolean         m_accepted;
@@ -32,8 +33,9 @@ public abstract class AbstractPhasedDialog extends Stage
     protected Button    ui_okButton;
     protected Button    ui_cancelButton;
     
-    public AbstractPhasedDialog(final Configurations config)
+    public AbstractPhasedDialog(final Configurations config, final DialogObserver observer)
     {
+        m_observer       = observer;
         m_phases         = new ArrayList<>();
         m_phaseIndex     = 0;
         m_accepted       = false;
@@ -57,6 +59,18 @@ public abstract class AbstractPhasedDialog extends Stage
         return m_accepted;
     }
     
+    @Override // from DialogCallback
+    public Stage getOwningStage()
+    {
+        return this;
+    }
+    
+    @Override
+    public void update()
+    {
+        
+    }
+    
     /* This abstract method is called whenever user proceeds to next phase
      * of the dialog by pressing "next" button. */
     protected abstract void proceed();
@@ -65,7 +79,7 @@ public abstract class AbstractPhasedDialog extends Stage
      * of the dialog by pressing "back" button. */
     protected abstract void rollBack();
     
-    protected abstract Pane createDiscogsResultPane();
+    //protected abstract void showDiscogsResultsDialog(final Configurations config);
     
     protected boolean isLastPhase()
     {
@@ -145,7 +159,8 @@ public abstract class AbstractPhasedDialog extends Stage
                 break;
                 
             case "DiscogsButton":
-                System.out.println("Discogs request!");
+                m_observer.discogsRequest(this);
+          
                 break;
                 
             default:

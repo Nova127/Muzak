@@ -22,15 +22,16 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import muzak.Configurations.Resources;
 import muzak.mycomp.IntegerSpinnerPane;
 import muzak.mycomp.MultiSelectionListView;
 import muzak.mycomp.TablessTextArea;
 
-public class ReleaseDialog extends AbstractPhasedDialog implements DialogCallback
+public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallback
 {
-    private DialogObserver          m_observer;
+    
     /* Phase 0 UI components: */
     private TextField               ui_titleField           = new TextField();
     private TextField               ui_altTitleField        = new TextField();
@@ -68,8 +69,7 @@ public class ReleaseDialog extends AbstractPhasedDialog implements DialogCallbac
     
     public ReleaseDialog(final Configurations config, final DialogObserver observer)
     {
-        super(config);
-        m_observer = observer;
+        super(config, observer);
         
         ResourceBundle res = config.getResources(Resources.RELEASE_DIALOG);
 
@@ -87,12 +87,6 @@ public class ReleaseDialog extends AbstractPhasedDialog implements DialogCallbac
         setTitle(res.getString("DIALOG_TITLE"));
         
         super.prepare();
-    }
-    
-    @Override // from DialogCallback
-    public Stage getOwningStage()
-    {
-        return this;
     }
     
     @Override // from DialogCallback
@@ -199,6 +193,24 @@ public class ReleaseDialog extends AbstractPhasedDialog implements DialogCallbac
     }
     
     @Override
+    public String getQueryTitle()
+    {
+        return getReleaseTitle();
+    }
+
+    @Override
+    public String getQueryCatNumber()
+    {
+        return MyUtils.trimToAlphanumeric(getCatalogNumber());
+    }
+
+    @Override
+    public String getQueryBarcode()
+    {
+        return getBarcode();
+    }
+    
+    @Override
     protected void proceed()
     {
         if(getCurrentPhase() == 1) /* Phase 1 - Select performers for the release. */
@@ -239,9 +251,10 @@ public class ReleaseDialog extends AbstractPhasedDialog implements DialogCallbac
     }
     
     @Override
-    protected Pane createDiscogsResultPane()
+    public void showDiscogsResultsDialog(final Configurations config)
     {
-        return null;
+        
+        
     }
     
     private void relayNewArtistRequest()
@@ -423,4 +436,6 @@ public class ReleaseDialog extends AbstractPhasedDialog implements DialogCallbac
         
         return pane;
     }
+
+    
 }

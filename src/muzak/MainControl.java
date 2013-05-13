@@ -1,8 +1,13 @@
 
 package muzak;
 
+import discogs.Discogs;
+import discogs.DiscogsWorker;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import muzak.mycomp.ViewModDelObserver;
 import muzakModel.Artist;
@@ -19,6 +24,7 @@ import javafx.scene.control.MenuItem;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import muzakModel.NotUniqueSignatureException;
+import org.json.simple.parser.ParseException;
 
 public class MainControl implements DialogObserver, ViewModDelObserver
 {
@@ -28,6 +34,7 @@ public class MainControl implements DialogObserver, ViewModDelObserver
     //private Locale m_locale = new Locale("fi");
     private Stage mainWindow;
     private Muzak muzak;
+    private Discogs m_discogs = new DiscogsWorker();
     
     public MainControl()
     {
@@ -100,10 +107,24 @@ public class MainControl implements DialogObserver, ViewModDelObserver
     }
     
     @Override
+    public ArrayList<String> getDiscogsResults()
+    {
+        return m_discogs.getReleases();
+    }
+    
+    @Override
     public void createArtist(DialogCallback callback)
     {
         showArtistDialog(callback.getOwningStage());
         callback.update();
+    }
+    
+    @Override
+    public void discogsRequest(DialogCallback callback)
+    {
+        m_discogs.searchReleases(callback.getQueryTitle(), callback.getQueryCatNumber(), callback.getQueryBarcode());
+        //System.out.println("MainControl / Discogs request");
+        showDiscogsResultsDialog(callback.getOwningStage());
     }
     
     public void handleSearchAction(String searchString, String filter)
@@ -186,6 +207,25 @@ public class MainControl implements DialogObserver, ViewModDelObserver
             break;
         } 
     }
+    private void showDiscogsResultsDialog(Stage owner)
+    {
+        DiscogsResultsDialog dialog = new DiscogsResultsDialog(m_config, this);
+        dialog.initModality(Modality.WINDOW_MODAL);
+        dialog.initOwner(owner);
+        m_discogs.setOnFinished(dialog);
+        try {
+            m_discogs.request();
+        } catch (IOException ex) {
+            Logger.getLogger(MainControl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParseException ex) {
+            Logger.getLogger(MainControl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        if(dialog.execute())
+        {
+            
+        }
+    }
     
     private void showReleaseDialog()
     {
@@ -212,7 +252,7 @@ public class MainControl implements DialogObserver, ViewModDelObserver
             release.setRating(dialog.getRating());
             release.setComment(dialog.getComment());
             
-            // TODO: Ehkäpä jokin hivenen nerokkaampi poikkeustenkäsittely lienee paikallaan. Vai häh?
+            // TODO: 
             try
             {
                 m_model.insert(release);
@@ -236,7 +276,7 @@ public class MainControl implements DialogObserver, ViewModDelObserver
     
     private void showArtistDialog(Stage owner)
     {
-        ArtistDialog dialog = new ArtistDialog(m_config);
+        ArtistDialog dialog = new ArtistDialog(m_config, this);
         dialog.initModality(Modality.WINDOW_MODAL);
         dialog.initOwner(owner);
         
@@ -251,10 +291,11 @@ public class MainControl implements DialogObserver, ViewModDelObserver
             artist.setFounded(dialog.getFounded());
             artist.setComment(dialog.getComment());
             
-            // TODO: Ehkäpä jokin hivenen nerokkaampi poikkeustenkäsittely lienee paikallaan. Vai häh?
+            // TODO: 
             try
             {
                 m_model.insert(artist);
+                //muzak.addContent(UIUtils.getListInfoElement(artist, this));
             }
             catch(IllegalArgumentException e)
             {

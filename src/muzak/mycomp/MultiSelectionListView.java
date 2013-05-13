@@ -157,6 +157,14 @@ public class MultiSelectionListView extends ListView<SelectionElement>// impleme
         
         this.setItems(FXCollections.observableArrayList(items));
     }
+    public void insertSelectionElements(ArrayList<String> list)
+    {
+        ArrayList<SelectionElement> items = new ArrayList<>();
+        for(String dmo : list)
+            items.add(new SelectionElement(dmo, dmo));
+        
+        this.setItems(FXCollections.observableArrayList(items));
+    }
     
     public ArrayList<KeyValueCombo> getSelected()
     {

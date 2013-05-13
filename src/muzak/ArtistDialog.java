@@ -46,9 +46,9 @@ public class ArtistDialog extends AbstractPhasedDialog
     private Label                   ui_foundedValue         = new Label();
     private Label                   ui_commentValue         = new Label();
     
-    public ArtistDialog(final Configurations config)
+    public ArtistDialog(final Configurations config, final DialogObserver observer)
     {
-        super(config);
+        super(config, observer);
         
         ResourceBundle res = config.getResources(Resources.ARTIST_DIALOG);
 
@@ -139,10 +139,9 @@ public class ArtistDialog extends AbstractPhasedDialog
     }
     
     @Override
-    protected Pane createDiscogsResultPane()
+    public void showDiscogsResultsDialog(final Configurations config)
     {
-        Pane p = new GridPane();
-        return p;
+        
     }
     
     protected String makeTechName()
@@ -286,5 +285,20 @@ public class ArtistDialog extends AbstractPhasedDialog
         pane.add(UIUtils.getHStretcher(), 1, 8);
         
         return pane;
+    }
+
+    @Override
+    public String getQueryTitle() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getQueryCatNumber() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getQueryBarcode() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
