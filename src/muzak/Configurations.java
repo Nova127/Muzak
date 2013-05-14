@@ -16,7 +16,8 @@ public interface Configurations
         LIST_OF_COUNTRIES,
         LIST_OF_STYLES,
         LIST_OF_RELEASE_TYPES,
-        LIST_OF_RELEASE_MEDIA;
+        LIST_OF_RELEASE_MEDIA,
+        LIST_OF_RATINGS;
     }
     
     /* Starting value for year of foundation list. */

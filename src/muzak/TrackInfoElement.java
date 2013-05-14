@@ -2,7 +2,6 @@
 package muzak;
 
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 public class TrackInfoElement
@@ -11,15 +10,24 @@ public class TrackInfoElement
     private final SimpleStringProperty title;
     private final SimpleStringProperty length;
     private final SimpleBooleanProperty cover;
-    private final SimpleIntegerProperty rating;
+    private final SimpleStringProperty rating;
     
-    public TrackInfoElement(String ordinal, String title, String length, boolean cover, int rating)
+    public TrackInfoElement()
     {
-        this.ordinal = new SimpleStringProperty(ordinal);
-        this.title = new SimpleStringProperty(title);
-        this.length = new SimpleStringProperty(length);
-        this.cover = new SimpleBooleanProperty(cover);
-        this.rating = new SimpleIntegerProperty(rating);
+        this.ordinal    = new SimpleStringProperty();
+        this.title      = new SimpleStringProperty();
+        this.length     = new SimpleStringProperty();
+        this.cover      = new SimpleBooleanProperty();
+        this.rating     = new SimpleStringProperty();
+    }
+    
+    public TrackInfoElement(String ordinal, String title, String length, boolean cover, String rating)
+    {
+        this.ordinal    = new SimpleStringProperty(ordinal);
+        this.title      = new SimpleStringProperty(title);
+        this.length     = new SimpleStringProperty(length);
+        this.cover      = new SimpleBooleanProperty(cover);
+        this.rating     = new SimpleStringProperty(rating);
     }
     
     public String getOrdinal()
@@ -42,28 +50,33 @@ public class TrackInfoElement
         return cover.get();
     }
     
-    public int getRating()
+    public String getRating()
     {
         return rating.get();
     }
     
-    public SimpleStringProperty getOrdinalProperty() {
+    public SimpleStringProperty getOrdinalProperty()
+    {
         return ordinal;
     }
 
-    public SimpleStringProperty getTitleProperty() {
+    public SimpleStringProperty getTitleProperty()
+    {
         return title;
     }
 
-    public SimpleStringProperty getLengthProperty() {
+    public SimpleStringProperty getLengthProperty()
+    {
         return length;
     }
 
-    public SimpleBooleanProperty getCoverProperty() {
+    public SimpleBooleanProperty getCoverProperty()
+    {
         return cover;
     }
 
-    public SimpleIntegerProperty getRatingProperty() {
+    public SimpleStringProperty getRatingProperty()
+    {
         return rating;
     }
     
@@ -87,8 +100,38 @@ public class TrackInfoElement
         this.cover.set(cover);
     }
     
-    public void setRating(int rating)
+    public void setRating(String rating)
     {
         this.rating.set(rating);
     }
+    
+    @Override
+    public String toString()
+    {
+        return getOrdinal() + " " + getTitle() + " " + getLength() + " " + getCover() + " " + getRating();
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

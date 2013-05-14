@@ -37,6 +37,18 @@ public class DiscogsResultsDialog extends AbstractPhasedDialog
         super.prepare();
     }
     
+    public String getUserSelection()
+    {
+        String choice = "";
+        
+        /* Should be only 0 or 1 (expected) selection. */
+        ArrayList<String> selection = ui_resultsChoice.getSelectedKeys();
+        if(!selection.isEmpty())
+            choice = selection.get(0);
+        
+        return choice;
+    }
+    
     @Override
     public void update()
     {
@@ -79,7 +91,6 @@ public class DiscogsResultsDialog extends AbstractPhasedDialog
         ui_waiting.setText(res.getString("WAITING"));
 
         VBox box = UIUtils.vLayout(10.0, UIUtils.hLayoutCentered(ui_waiting), ui_resultsChoice);
-        //ui_phase = UIUtils.vLayoutCenterCenter(ui_waiting);
         box.getStyleClass().addAll("glass-pane", "dialog-phase");
         
         return box;

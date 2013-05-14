@@ -129,7 +129,7 @@ public class MainControl implements DialogObserver, ViewModDelObserver
         m_discogs = new DiscogsWorker();
         m_discogs.searchReleases(callback.getQueryTitle(), callback.getQueryCatNumber(), callback.getQueryBarcode());
         //System.out.println("MainControl / Discogs request");
-        showDiscogsResultsDialog(callback.getOwningStage(), m_discogs);
+        showDiscogsResultsDialog(callback, m_discogs);
     }
     
     public void handleSearchAction(String searchString, String filter)
@@ -213,23 +213,38 @@ public class MainControl implements DialogObserver, ViewModDelObserver
             break;
         } 
     }
-    private void showDiscogsResultsDialog(Stage owner, DiscogsWorker worker)
+    
+    private void showDiscogsResultsDialog(DialogCallback owner, DiscogsWorker worker)
     {
         DiscogsResultsDialog dialog = new DiscogsResultsDialog(m_config, this);
         dialog.initModality(Modality.WINDOW_MODAL);
-        dialog.initOwner(owner);
+        dialog.initOwner(owner.getOwningStage());
         
         worker.setOnFinished(dialog);
         worker.start();
         
         if(dialog.execute())
         {
+            String user = dialog.getUserSelection();
+            
+            if(!user.isEmpty())
+            {
+                DiscogsWorker dw = new DiscogsWorker();
+                dw.setRequestMode();
+                dw.requestRelease(user);
+                dw.setOnFinished(owner);
+                dw.start();
+                
+                System.out.println("VALINTA " + dialog.getUserSelection());
+            }
         }
         else
         {
-            if(worker.getState() != State.TERMINATED)
-                worker.interrupt();
         }
+        
+        /* Interrupt Discogs search if still ongoing. */
+        if(worker.getState() != State.TERMINATED)
+            worker.interrupt();
     }
     
     private void showTracksDialog()
@@ -240,7 +255,8 @@ public class MainControl implements DialogObserver, ViewModDelObserver
         
         if(dialog.execute())
         {
-            
+            for(TrackInfoElement tie : dialog.getData())
+                System.out.println(tie);
         }
         else
         {
@@ -273,7 +289,7 @@ public class MainControl implements DialogObserver, ViewModDelObserver
             release.setRating(dialog.getRating());
             release.setComment(dialog.getComment());
             
-            // TODO: 
+            // TODO: Better exception handling would be in order.
             try
             {
                 m_model.insert(release);
@@ -312,7 +328,7 @@ public class MainControl implements DialogObserver, ViewModDelObserver
             artist.setFounded(dialog.getFounded());
             artist.setComment(dialog.getComment());
             
-            // TODO: 
+            // TODO: Better exception handling would be in order. 
             try
             {
                 m_model.insert(artist);

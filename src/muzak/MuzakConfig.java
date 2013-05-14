@@ -1,5 +1,6 @@
 package muzak;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -122,6 +123,10 @@ class MuzakConfig implements Configurations
             
         case LIST_OF_RELEASE_MEDIA:
             baseName += "ListOfReleaseMedia";
+            break;
+            
+        case LIST_OF_RATINGS:
+            baseName += "ListOfRatings";
             break;
             
         default:

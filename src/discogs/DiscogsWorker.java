@@ -5,6 +5,10 @@ import java.util.ArrayList;
 
 import muzak.DialogCallback;
 import muzak.KeyValueCombo;
+import muzak.RecordInfoElement;
+import muzak.TrackInfoElement;
+import muzakModel.Artist;
+import muzakModel.Release;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -12,6 +16,8 @@ import org.json.simple.parser.ParseException;
 
 public class DiscogsWorker extends Thread
 {
+    public enum Mode{ INQUIRE, REQUEST };
+    
     private static final String urlBase = "http://api.discogs.com/";
     private static final String relStub = "release_title=";
     private static final String catStub = "catno=";
@@ -19,16 +25,27 @@ public class DiscogsWorker extends Thread
     private String m_query = "";
     private DialogCallback m_callback;
     private ArrayList<KeyValueCombo> m_resultSet;
+    private Mode m_mode;
     
     public DiscogsWorker()
     {
-        
+        m_mode = Mode.INQUIRE;
     }
     
     public void setOnFinished(DialogCallback callback)
     {
         m_callback = callback;
         
+    }
+    
+    public void setInquireMode()
+    {
+        m_mode = Mode.INQUIRE;
+    }
+    
+    public void setRequestMode()
+    {
+        m_mode = Mode.REQUEST;
     }
     
     public void searchReleases(String t, String c, String b)
@@ -46,6 +63,11 @@ public class DiscogsWorker extends Thread
         
         System.out.println(query);
         m_query = query;
+    }
+    
+    public void requestRelease(String resourceUri)
+    {
+        m_query = resourceUri;
     }
     
     public ArrayList<KeyValueCombo> getReleases()
@@ -74,10 +96,26 @@ public class DiscogsWorker extends Thread
             result += "BARCODE: "   + jsonArrayToString(((JSONObject)res.get(i)).get("barcode")) + "\n";
 
             results.add(new KeyValueCombo(res_url, result));
-            System.out.println(result + res_url);
+            //System.out.println(result + res_url);
         }
         
         return results;
+    }
+    
+    private RecordInfoElement parseRIE(JSONObject job)
+    {
+        RecordInfoElement rie = new RecordInfoElement();
+        
+        Artist artist = rie.getArtist();
+        Release release = rie.getRelease();
+        ArrayList<TrackInfoElement> tracklist = rie.getTracklist();
+        
+        System.out.println(job.get("status"));
+        
+        release.setCatalogNumber( jsonArrayToString((JSONObject)job.get("labels")) );
+        
+        rie.setRelease(release);
+        return rie;
     }
     
     @Override
@@ -85,13 +123,16 @@ public class DiscogsWorker extends Thread
     {
         try
         {
-            request();
+            if(m_mode == Mode.INQUIRE)
+                inquire();
+            else if(m_mode == Mode.REQUEST)
+                request();
         }
         catch(Exception e)
         {}
     }
     
-    public void request() throws IOException, ParseException
+    public void inquire() throws IOException, ParseException
     {
         //JSONReader reader = new JSONReader();
         
@@ -99,6 +140,19 @@ public class DiscogsWorker extends Thread
         m_resultSet = parseSearchReleaseResponse(job);
         
         m_callback.update();
+    }
+    
+    public void request() throws IOException, ParseException
+    {
+        //JSONReader reader = new JSONReader();
+        
+        JSONObject job = JSONReader.readJsonFromUrl(m_query);
+        System.out.println(job);
+        //m_resultSet = parseSearchReleaseResponse(job);
+        
+        System.out.println(m_callback != null);
+        parseRIE(job);
+        m_callback.injectValues(null);
     }
     
     private String jsonArrayToString(Object job)
@@ -114,7 +168,7 @@ public class DiscogsWorker extends Thread
         }
         catch(ClassCastException e)
         {
-            res = "java.lang.ClassCastException";
+            //res = "java.lang.ClassCastException";
         }
         
         return res;

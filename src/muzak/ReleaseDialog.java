@@ -28,6 +28,8 @@ import muzak.Configurations.Resources;
 import muzak.mycomp.IntegerSpinnerPane;
 import muzak.mycomp.MultiSelectionListView;
 import muzak.mycomp.TablessTextArea;
+import muzakModel.DataModelObject;
+import muzakModel.Release;
 
 public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallback
 {
@@ -45,7 +47,7 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
     private ComboBox<String>        ui_curYearChoice        = new ComboBox<>();
     private IntegerSpinnerPane      ui_discCount            = new IntegerSpinnerPane();
     private ComboBox<KeyValueCombo> ui_styleChoice          = new ComboBox<>();
-    private ComboBox<String>        ui_ratingChoice         = new ComboBox<>();
+    private ComboBox<KeyValueCombo> ui_ratingChoice         = new ComboBox<>();
     private TablessTextArea         ui_commentArea          = new TablessTextArea();
     private Button                  ui_discogsButton        = getDiscogsButton();
     /* Phase 1 UI components: */
@@ -80,7 +82,7 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
         UIUtils.populate(ui_styleChoice, config.getResources(Resources.LIST_OF_STYLES));
         UIUtils.populate(ui_curYearChoice, config.getReleasedStartValue(), config.getReleasedEndValue());
         UIUtils.populate(ui_orgYearChoice, config.getReleasedStartValue(), config.getReleasedEndValue());
-        UIUtils.populate(ui_ratingChoice, config.getMinRatingValue(), config.getMaxRatingValue());
+        UIUtils.populate(ui_ratingChoice, config.getResources(Resources.LIST_OF_RATINGS));
         ui_typeList.insertSelectionElements(config.getResources(Resources.LIST_OF_RELEASE_TYPES));
         ui_mediaList.insertSelectionElements(config.getResources(Resources.LIST_OF_RELEASE_MEDIA));
         ui_performersChoice.insertSelectionElements(m_observer.getArtists());
@@ -112,6 +114,19 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
     public String getQueryBarcode()
     {
         return getBarcode();
+    }
+    
+    @Override // from DialogCallback
+    public void injectValues(DataModelObject dmo)
+    {
+        System.out.println("RELDIALOG/INJECT");
+//        ui_commentArea.setText("Kissat");
+//        
+//        if(record != null)
+//        {
+//            Release release = record.getRelease();
+//            ui_catNumberField.setText( release.getCatalogNumber() );
+//        }
     }
     
     public String getReleaseTitle()
@@ -189,9 +204,9 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
     
     public int getRating()
     {
-        String val = ui_ratingChoice.getSelectionModel().getSelectedItem();
+        KeyValueCombo kvc = ui_ratingChoice.getSelectionModel().getSelectedItem();
         
-        return (val != null ? Integer.parseInt(val) : 0);
+        return (kvc != null ? Integer.parseInt(kvc.getKey()) : 0);
     }
     
     public String getComment()
@@ -292,8 +307,8 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
         KeyValueCombo kvc = ui_styleChoice.getSelectionModel().getSelectedItem();
         ui_styleValue.setText(kvc != null ? kvc.getValue() : "");
         
-        String rating = ui_ratingChoice.getSelectionModel().getSelectedItem();
-        ui_ratingValue.setText(rating != null ? rating : "");
+        KeyValueCombo rating = ui_ratingChoice.getSelectionModel().getSelectedItem();
+        ui_ratingValue.setText(rating != null ? rating.getValue() : "");
         
         ui_commentValue.setText(getComment());
     }

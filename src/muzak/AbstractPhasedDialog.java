@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.ResourceBundle;
 
 import muzak.Configurations.Resources;
+import muzakModel.DataModelObject;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -63,6 +64,19 @@ public abstract class AbstractPhasedDialog extends Stage implements DialogCallba
     public Stage getOwningStage()
     {
         return this;
+    }
+    
+    @Override // from DialogCallback
+    public AbstractPhasedDialog getReference()
+    {
+        System.out.println("APD/INJECT");
+        return this;
+    }
+    
+    @Override // from DialogCallback; at this level, there's nothing to inject into.
+    public void injectValues(DataModelObject dmo)
+    {
+        return;
     }
     
     @Override // from DialogCallback
