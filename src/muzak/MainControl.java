@@ -157,6 +157,7 @@ public class MainControl implements DialogObserver, ViewModDelObserver
             break;
         case "AddTracksRequest":
             System.out.println(((MenuItem)event.getSource()).getId());
+            showTracksDialog();
             break;
         case "ModifyArtistRequest":
             System.out.println(((MenuItem)event.getSource()).getId());
@@ -228,6 +229,22 @@ public class MainControl implements DialogObserver, ViewModDelObserver
         {
             if(worker.getState() != State.TERMINATED)
                 worker.interrupt();
+        }
+    }
+    
+    private void showTracksDialog()
+    {
+        TracksDialog dialog = new TracksDialog(m_config, this);
+        dialog.initModality(Modality.WINDOW_MODAL);
+        dialog.initOwner(mainWindow);
+        
+        if(dialog.execute())
+        {
+            
+        }
+        else
+        {
+            
         }
     }
     

@@ -43,6 +43,18 @@ public class UIUtils
         component.setMaxSize(component.getMinWidth(), component.getMinHeight());
     }
     
+    public static void setFixedHeight(Control component, double value)
+    {
+        component.setMinHeight(value);
+        component.setMaxHeight(component.getMinHeight());
+    }
+    
+    public static void setFixedWidth(Control component, double value)
+    {
+        component.setMinWidth(value);
+        component.setMaxWidth(component.getMinWidth());
+    }
+    
     public static void populate(ComboBox<KeyValueCombo> cbox, ResourceBundle res)
     {
         ArrayList<KeyValueCombo> values = new ArrayList<>();
@@ -83,6 +95,7 @@ public class UIUtils
     {
         HBox box = new HBox(spacing);
         box.getChildren().addAll(nodes);
+        box.setAlignment(Pos.CENTER_LEFT);
         
         return box;
     }

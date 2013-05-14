@@ -100,6 +100,10 @@ class MuzakConfig implements Configurations
             baseName += "ReleaseDialog";
             break;
             
+        case TRACKS_DIALOG:
+            baseName += "TracksDialog";
+            break;
+            
         case DISCOGS_RESULTS_DIALOG:
             baseName += "DiscogsResultsDialog";
             break;

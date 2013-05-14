@@ -11,6 +11,7 @@ public interface Configurations
         ABSTRACT_PHASED_DIALOG,
         ARTIST_DIALOG,
         RELEASE_DIALOG,
+        TRACKS_DIALOG,
         DISCOGS_RESULTS_DIALOG,
         LIST_OF_COUNTRIES,
         LIST_OF_STYLES,
