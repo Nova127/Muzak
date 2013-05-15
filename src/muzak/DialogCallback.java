@@ -1,13 +1,12 @@
 package muzak;
 
-import muzakModel.DataModelObject;
 import javafx.stage.Stage;
 
 public interface DialogCallback
 {
     Stage getOwningStage();
     AbstractPhasedDialog getReference();
-    void injectValues(DataModelObject dmo);
+    void injectValues(RecordInfoElement record);
     void update();
     //void showDiscogsResultsDialog(final Configurations config);
     

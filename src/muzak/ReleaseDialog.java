@@ -4,6 +4,8 @@ package muzak;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -28,7 +30,7 @@ import muzak.Configurations.Resources;
 import muzak.mycomp.IntegerSpinnerPane;
 import muzak.mycomp.MultiSelectionListView;
 import muzak.mycomp.TablessTextArea;
-import muzakModel.DataModelObject;
+import muzak.mycomp.TracklistTableView;
 import muzakModel.Release;
 
 public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallback
@@ -54,6 +56,8 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
     private MultiSelectionListView  ui_performersChoice     = new MultiSelectionListView(false);
     private Button                  ui_createArtistButton   = new Button();
     /* Phase 2 UI components: */
+    private TracklistTableView      ui_tracklistTable       = null;
+    /* Phase 3 UI components: */
     private TextArea                ui_performersValue      = new TextArea();
     private Label                   ui_titleValue           = new Label();
     private Label                   ui_techTitleValue       = new Label();
@@ -73,10 +77,13 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
     {
         super(config, observer);
         
+        ui_tracklistTable = new TracklistTableView(config);
+        
         ResourceBundle res = config.getResources(Resources.RELEASE_DIALOG);
 
         super.addPhase(createReleaseForm(res));
         super.addPhase(createReleaseArtistForm(res));
+        super.addPhase(createReleaseTracklistForm(res));
         super.addPhase(createReleaseSummary(res));
         
         UIUtils.populate(ui_styleChoice, config.getResources(Resources.LIST_OF_STYLES));
@@ -117,16 +124,23 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
     }
     
     @Override // from DialogCallback
-    public void injectValues(DataModelObject dmo)
+    public void injectValues(RecordInfoElement record)
     {
         System.out.println("RELDIALOG/INJECT");
-//        ui_commentArea.setText("Kissat");
-//        
-//        if(record != null)
-//        {
-//            Release release = record.getRelease();
-//            ui_catNumberField.setText( release.getCatalogNumber() );
-//        }
+        
+        if(record != null)
+        {
+            Release release = record.getRelease();
+            ui_catNumberField.setText(release.getCatalogNumber());
+            
+            for(TrackInfoElement track : record.getTracklist())
+            {
+                System.out.println(track);
+                ui_tracklistTable.addTableData(track);
+            }
+            
+            //ui_commentArea.setText("Kissat");
+        }
     }
     
     public String getReleaseTitle()
@@ -363,6 +377,14 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
         pane.add(ui_commentValue, 1, 13, 2, 1);
         
         return pane;
+    }
+    
+    private VBox createReleaseTracklistForm(ResourceBundle res)
+    {
+        VBox box = UIUtils.vLayout(15.0, new Label(res.getString("TRACKLIST")), ui_tracklistTable);
+        box.getStyleClass().setAll("glass-pane", "dialog-phase");
+        
+        return box;
     }
     
     private VBox createReleaseArtistForm(ResourceBundle res)

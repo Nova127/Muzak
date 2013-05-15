@@ -195,7 +195,7 @@ public class TracklistTableView extends TableView<TrackInfoElement>
         
         ocol.setMinWidth(50.0);
         tcol.setMinWidth(150.0);
-        tcol.setPrefWidth(500.0);
+        tcol.setPrefWidth(200.0);
         lcol.setMinWidth(80.0);
         ccol.setMinWidth(50.0);
         rcol.setMinWidth(100.0);
