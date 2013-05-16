@@ -143,6 +143,12 @@ class MuzakConfig implements Configurations
         return getResources(Resources.LIST_OF_COUNTRIES).getString(code);
     }
     
+    @Override
+    public String mapKeyToStyle(String code)
+    {
+        return getResources(Resources.LIST_OF_STYLES).getString(code);
+    }
+    
     public void setFoundedStartValue(int value)
     {
         m_foundedStartValue = value;

@@ -1,14 +1,10 @@
 
 package muzak;
 
-import discogs.Discogs;
 import discogs.DiscogsWorker;
-import java.io.IOException;
 import java.lang.Thread.State;
 import java.util.ArrayList;
 import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import muzak.mycomp.ViewModDelObserver;
 import muzakModel.Artist;
@@ -25,14 +21,11 @@ import javafx.scene.control.MenuItem;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import muzakModel.NotUniqueSignatureException;
-import org.json.simple.parser.ParseException;
 
 public class MainControl implements DialogObserver, ViewModDelObserver
 {
     private MuzakDataModel m_model;
     private MuzakConfig m_config;
-    /* Initialize 'default' locale. */
-    //private Locale m_locale = new Locale("fi");
     private Stage mainWindow;
     private Muzak muzak;
     private DiscogsWorker m_discogs;
@@ -84,6 +77,24 @@ public class MainControl implements DialogObserver, ViewModDelObserver
     public void handleViewRequest(DataModelObject dmo)
     {
         System.out.println("View Request from ID: " + dmo.getID() + " of " + dmo.getClass().getSimpleName());
+        ArtistViewDialog dialog = new ArtistViewDialog((Artist)dmo, m_config, this);
+        
+        Release rel = MuzakDataModel.createRelease();
+        rel.setTitle("Blizzard Beasts");
+        rel.setCatalogNumber("OPCD051");
+        rel.setBarCode("8347658374");
+        rel.setExtendedEdition(true);
+        rel.setOriginalRelease(true);
+        rel.setCurYear(1993);
+        rel.setStyleKey("ST15");
+        rel.setID(123123123L);
+        TreeSet<Release> ts = new TreeSet<>();
+        ts.add(rel);
+        
+        dialog.setReleases(ts);
+        dialog.initModality(Modality.WINDOW_MODAL);
+        dialog.initOwner(mainWindow);
+        dialog.execute();
     }
 
     @Override
@@ -334,7 +345,7 @@ public class MainControl implements DialogObserver, ViewModDelObserver
             try
             {
                 m_model.insert(artist);
-                //muzak.addContent(UIUtils.getListInfoElement(artist, this));
+                muzak.addContent(UIUtils.getListInfoElement(artist, this));
             }
             catch(IllegalArgumentException e)
             {

@@ -34,6 +34,7 @@ public interface Configurations
     public ResourceBundle getResources(Resources resource);
     
     public String mapCodeToCountry(String code);
+    public String mapKeyToStyle(String code);
     
     public boolean changeLangToEN();
     public boolean changeLangToFI();

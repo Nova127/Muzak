@@ -208,6 +208,8 @@ public class DiscogsWorker extends Thread
         
         JSONObject job = JSONReader.readJsonFromUrl(m_query);
         m_resultSet = parseSearchReleaseResponse(job);
+        //KeyValueElement kve = new KeyValueElement("asd", "qwer");
+        //m_resultSet.add(kve);
         
         m_callback.update();
         System.out.println("INQUIRE EXIT");
