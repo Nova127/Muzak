@@ -150,7 +150,7 @@ public class DiscogsWorker extends Thread
         ArrayList<String[]> tl = subobjects(job.get("tracklist"), "position", "title", "duration");
         for(String[] t : tl)
         {
-            tracklist.add(new TrackInfoElement(t[0], t[1], t[2], false, "0"));
+            tracklist.add(new TrackInfoElement(t[0], t[1], t[2], false));
         }
         
         

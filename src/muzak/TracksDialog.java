@@ -3,12 +3,18 @@ package muzak;
 
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -21,11 +27,14 @@ import muzakModel.TrackInfoElement;
 
 public class TracksDialog extends AbstractPhasedDialog
 {
+    /* Phase 1 UI components. */
+    private ComboBox<KeyValueElement>   ui_artistChoice     = new ComboBox<>();
+    private ListView<KeyValueElement>   ui_releaseChoice    = new ListView<>();
+    /* Phase 2 UI components. */
     private TextField                   ui_ordinalField     = new TextField();
     private TextField                   ui_titleField       = new TextField();
     private TextField                   ui_lengthField      = new TextField();
     private CheckBox                    ui_coverOption      = new CheckBox();
-    private ComboBox<KeyValueCombo>     ui_ratingChoice     = new ComboBox<>();
     private TracklistTableView          ui_tableView;
     private Button                      ui_discogs          = getDiscogsButton();
     
@@ -34,16 +43,16 @@ public class TracksDialog extends AbstractPhasedDialog
         super(config, observer);
         
         ui_tableView = new TracklistTableView(config);
+        UIUtils.populate(ui_artistChoice, m_observer.getArtists());
         
         ResourceBundle res = config.getResources(Resources.TRACKS_DIALOG);
         
+        addPhase(createSelectArtistReleaseForm(res));
         addPhase(createTracksForm(res));
-        
-        UIUtils.populate(ui_ratingChoice, config.getResources(Resources.LIST_OF_RATINGS));
         
         Rectangle2D screen = Screen.getPrimary().getVisualBounds();
         setWidth(0.5 * screen.getWidth());
-        setHeight(0.5 * screen.getHeight());
+        setHeight(0.6 * screen.getHeight());
         
         setTitle(res.getString("DIALOG_TITLE"));
         
@@ -67,20 +76,15 @@ public class TracksDialog extends AbstractPhasedDialog
     
     private TrackInfoElement makeTrackInfo()
     {
-        TrackInfoElement tie = new TrackInfoElement();
-        
         String ordinal = MyUtils.trimWhitespaces(ui_ordinalField.getText());
         if(ordinal.isEmpty())
             return null;
         
+        TrackInfoElement tie = new TrackInfoElement();
         tie.setOrdinal(ordinal);
         tie.setTitle(MyUtils.trimWhitespaces(ui_titleField.getText()));
         tie.setLength(MyUtils.trimWhitespaces(ui_lengthField.getText()));
         tie.setCover(ui_coverOption.isSelected());
-        
-        KeyValueCombo kvc = ui_ratingChoice.getSelectionModel().getSelectedItem();
-        if(kvc != null)
-            tie.setRating(kvc.getValue());
         
         return tie;
     }
@@ -113,7 +117,6 @@ public class TracksDialog extends AbstractPhasedDialog
                 ui_titleField.clear();
                 ui_lengthField.clear();
                 ui_coverOption.setSelected(false);
-                ui_ratingChoice.getSelectionModel().clearSelection();
             }
         });
         
@@ -123,13 +126,63 @@ public class TracksDialog extends AbstractPhasedDialog
                                     ui_titleField,
                                     ui_coverOption,
                                     ui_lengthField,
-                                    ui_ratingChoice,
                                     UIUtils.getHStretcher(),
                                     addButton);
+        
+        VBox.setVgrow(ui_tableView, Priority.ALWAYS);
         
         VBox box = UIUtils.vLayout(10.0, ui_tableView, hbox, ui_discogs);
         box.getStyleClass().addAll("glass-pane", "dialog-phase");
         
         return box;
     }
+    
+    private Pane createSelectArtistReleaseForm(ResourceBundle res)
+    {
+        ui_artistChoice.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>()
+        {
+            @Override
+            public void changed(ObservableValue<? extends Number> arg0, Number arg1, Number arg2)
+            {
+                KeyValueElement artist = ui_artistChoice.getSelectionModel().getSelectedItem();
+                ui_releaseChoice.setItems(FXCollections.observableArrayList(m_observer.getReleasesByArtist(artist)));
+            }
+        });
+        
+        VBox box = UIUtils.vLayout(10.0, UIUtils.getVStretcher(),
+                                         new Label(res.getString("ARTIST_GUIDE")),
+                                         ui_artistChoice,
+                                         UIUtils.getVStretcher(),
+                                         new Label(res.getString("RELEASE_GUIDE")),
+                                         ui_releaseChoice);
+        box.getStyleClass().addAll("glass-pane", "dialog-phase");
+        
+        return box;
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

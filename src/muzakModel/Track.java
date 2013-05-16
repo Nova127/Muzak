@@ -82,6 +82,12 @@ public class Track extends AbstractDataModelObject implements Serializable
     }
     
     @Override
+    public String getListString()
+    {
+        return m_title;
+    }
+    
+    @Override
     public String toString()
     {
         return "\"" + m_title + "\"";

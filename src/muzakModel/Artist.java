@@ -299,6 +299,23 @@ public class Artist extends AbstractDataModelObject implements Serializable
     }
     
     @Override
+    public String getListString()
+    {
+        String signature = "";
+        
+        if(!m_countryCode.isEmpty())
+            signature = m_countryCode;
+        
+        if(m_founded >= 0)
+            signature += "/" + m_founded;
+        
+        if(!signature.isEmpty())
+            signature = "[" + signature + "]";
+        
+        return m_techName + " " + signature;
+    }
+    
+    @Override
     public String toString()
     {
         return "\"" + m_name + "\" [" + m_countryCode + ", " + m_founded + "]";

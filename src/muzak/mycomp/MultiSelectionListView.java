@@ -64,12 +64,11 @@ public class MultiSelectionListView extends ListView<SelectionElement>// impleme
 {
     private boolean     m_multiSelectionMode = true;
     private ToggleGroup m_toggles            = new ToggleGroup();
-    private ObservableList<SelectionElement> m_data = FXCollections.observableArrayList();
     
     public MultiSelectionListView(boolean multiSelectionMode)
     {
         m_multiSelectionMode = multiSelectionMode;
-        this.setItems(m_data);
+        
         setupCellFactory();
     }
     
@@ -103,11 +102,12 @@ public class MultiSelectionListView extends ListView<SelectionElement>// impleme
     {
         ArrayList<SelectionElement> items = new ArrayList<>();
         for(String key : res.keySet())
-            m_data.add(new SelectionElement(key, res.getString(key)));//items.add(new SelectionElement(key, res.getString(key)));
+            //m_data.add(new SelectionElement(key, res.getString(key)));
+            items.add(new SelectionElement(key, res.getString(key)));
         
-        //Collections.sort(items);
+        Collections.sort(items);
         
-        //this.setItems(FXCollections.observableArrayList(items));
+        this.setItems(FXCollections.observableArrayList(items));
     }
     
     public void insertSelectionElements(TreeSet<DataModelObject> combos)
@@ -121,13 +121,10 @@ public class MultiSelectionListView extends ListView<SelectionElement>// impleme
     
     public void insertSelectionElements(ArrayList<KeyValueCombo> combos)
     {
-        m_data.clear();
         ArrayList<SelectionElement> items = new ArrayList<>();
         for(KeyValueCombo kvc : combos)
-            //m_data.add(new SelectionElement(kvc));
             items.add(new SelectionElement(kvc.getKey(), kvc.getValue()));
         
-        //m_data = FXCollections.observableArrayList(items);
         this.setItems(FXCollections.observableArrayList(items));
         System.out.println("MSLV/insert");
     }

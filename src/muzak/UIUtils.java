@@ -3,6 +3,7 @@ package muzak;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ResourceBundle;
+import java.util.TreeSet;
 
 import muzak.mycomp.ViewModDelObserver;
 import muzak.mycomp.ViewModDelTools;
@@ -155,6 +156,15 @@ public class UIUtils
             list.add(Integer.toString(i));
         
         cbox.setItems(FXCollections.observableList(list));
+    }
+    
+    public static void populate(ComboBox<KeyValueElement> cbox, TreeSet<DataModelObject> dmos)
+    {
+        ArrayList<KeyValueElement> values = new ArrayList<>();
+        for(DataModelObject dmo : dmos)
+            values.add(new KeyValueElement(dmo.getIDString(), dmo.getListString()));
+        
+        cbox.setItems(FXCollections.observableArrayList(values));
     }
     
     public static Region getHStretcher()

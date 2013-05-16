@@ -120,6 +120,17 @@ public class MainControl implements DialogObserver, ViewModDelObserver
     }
     
     @Override
+    public ArrayList<KeyValueElement> getReleasesByArtist(KeyValueElement artist)
+    {
+        ArrayList<KeyValueElement> releases = new ArrayList<>();
+        
+        for(Release rel : m_model.selectReleasesByArtist(Long.parseLong(artist.getKey())))
+            releases.add(new KeyValueElement(rel.getIDString(), rel.getListString()));
+        
+        return releases;
+    }
+    
+    @Override
     public ArrayList<KeyValueElement> getDiscogsResults()
     {
 //        if(m_discogs == null)
@@ -307,6 +318,9 @@ public class MainControl implements DialogObserver, ViewModDelObserver
             try
             {
                 m_model.insert(release);
+                
+                for(KeyValueCombo kvc : dialog.getArtists())
+                    m_model.associateArtistAndRelease(Long.parseLong(kvc.getKey()), release);
             }
             catch(IllegalArgumentException e)
             {
@@ -321,8 +335,6 @@ public class MainControl implements DialogObserver, ViewModDelObserver
         {
             
         }
-        
-        dialog.output();
     }
     
     private void showArtistDialog(Stage owner)

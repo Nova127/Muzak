@@ -435,12 +435,29 @@ public class Release extends AbstractDataModelObject implements Serializable
             signature = Integer.toString(m_curYear);
         
         if(!m_catalogNumber.isEmpty())
-            signature += "/" + m_catalogNumber;
+            signature += (signature.isEmpty() ? "" : "/") + m_catalogNumber;
         
         if(!signature.isEmpty())
             signature = "[" + signature + "]";
         
         return m_title + " " + signature;
+    }
+    
+    @Override
+    public String getListString()
+    {
+        String signature = "";
+        
+        if(m_curYear >= 0)
+            signature = Integer.toString(m_curYear);
+        
+        if(!m_catalogNumber.isEmpty())
+            signature += (signature.isEmpty() ? "" : "/") + m_catalogNumber;
+        
+        if(!signature.isEmpty())
+            signature = "[" + signature + "]";
+        
+        return m_techTitle + " " + signature;
     }
     
     @Override

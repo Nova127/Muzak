@@ -3,7 +3,6 @@ package muzakModel;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -19,7 +18,7 @@ public class MuzakDataModel
     private MusicianTable   m_musicians;
     
     /* Association tables: */
-    private MtMAssociation<Long, ArtistTrackRecord>  m_artaLink;
+    private MtMAssociation<Long, Boolean>            m_artaLink;
     private MtMAssociation<Long, ReleaseTrackRecord> m_retaLink;
     private MtMAssociation<Long, String>             m_remuLink;
     
@@ -30,9 +29,9 @@ public class MuzakDataModel
         m_releases  = new ReleaseTable();
         m_musicians = new MusicianTable();
         
-        m_artaLink = new MtMAssociation<>();
-        m_retaLink = new MtMAssociation<>();
-        m_remuLink = new MtMAssociation<>();
+        m_artaLink  = new MtMAssociation<>();
+        m_retaLink  = new MtMAssociation<>();
+        m_remuLink  = new MtMAssociation<>();
     }
     
     
@@ -58,10 +57,6 @@ public class MuzakDataModel
     public static Musician createMusician()
     {
         return new Musician(generateUniqueID());
-    }
-    public static ArtistTrackRecord createArtistTrackRecord()
-    {
-        return new ArtistTrackRecord();
     }
     public static ReleaseTrackRecord createAlbumTrackRecord()
     {
@@ -137,12 +132,12 @@ public class MuzakDataModel
         /* First select TIDs by Artist: */
         Set<Long> tids = m_artaLink.getRightKeys(artist.getID());
         
-        if(!tids.isEmpty())
+        if(tids != null && !tids.isEmpty())
         {
             /* Then select RIDs by TIDs: */
             TreeSet<Long> rids = (TreeSet<Long>)m_retaLink.getDistinctLeftKeys(tids);
             
-            if(!rids.isEmpty())
+            if(rids != null && !rids.isEmpty())
             {
                 /* Finally select Releases by RIDs: */
                 for(Long rid : rids)
@@ -155,6 +150,12 @@ public class MuzakDataModel
         return releases;
     }
     
+    public ArrayList<Release> selectReleasesByArtist(long aid)
+    {
+        Artist artist = m_artists.selectByID(aid);
+        
+        return selectReleasesByArtist(artist);
+    }
     
     /* ************************** *
      * METHODS FOR INSERTING DATA *
@@ -181,14 +182,34 @@ public class MuzakDataModel
             throw new IllegalArgumentException("Illegal argument class of type " + dmo.getClass().getSimpleName());
     }
     
-    public void associateArtistAndTrack(ArtistTrackRecord record, Artist artist, Track track) throws IllegalArgumentException
+    public void     insertTracklist(TreeSet<TrackInfoElement> tracklist, Artist artist, Release release)
+           throws   IllegalArgumentException, NotUniqueSignatureException
     {
-        if(!record.isValid()) throw new IllegalArgumentException("Invalid artist-track record!");
+        /* Throws IAE, if check fails and thus prevents associations. */
+        checkExistence(artist, release);
         
+        long aid = artist.getID(), rid = release.getID();
+        Track track = null;
+        
+        for(TrackInfoElement tie : tracklist)
+        {
+            track = new Track(generateUniqueID(), tie.getTitle());
+            
+            m_tracks.insert(track);
+            
+            /* Associate artist and track. */
+            m_artaLink.associate(aid, track.getID(), tie.getCover());
+            /* Associate release and track. */
+            m_retaLink.associate(rid, track.getID(), tie.getReleaseTrackRecord());
+        }
+    }
+    
+    public void associateArtistAndTrack(boolean cover, Artist artist, Track track) throws IllegalArgumentException
+    {
         /* Throws IAE, if check fails and thus prevents associations. */
         checkExistence(artist, track);
         
-        m_artaLink.associate(artist.getID(), track.getID(), record);
+        m_artaLink.associate(artist.getID(), track.getID(), cover);
     }
     
     public void associateReleaseAndTrack(ReleaseTrackRecord record, Release release, Track track) throws IllegalArgumentException
@@ -212,23 +233,17 @@ public class MuzakDataModel
         m_retaLink.associate(release.getID(), tid, null);
     }
     
-/*    public void addTracks(ArrayList<TrackInfoElement> tracks, long bid, long aid) throws IllegalArgumentException
+    public void associateArtistAndRelease(long aid, Release release) throws IllegalArgumentException
     {
-        if(tracks.isEmpty()) throw new IllegalArgumentException("Empty track list!");
+        Artist artist = m_artists.selectByID(aid);
         
-        for(TrackInfoElement tie : tracks)
-            if(!tie.isValid()) throw new IllegalArgumentException("Invalid track!");
-        
-        Long tid = 0L;
-        for(TrackInfoElement tie : tracks)
-        {
-            tid = m_tracks.insert(tie.getTrack());
-            
-            m_bataLink.associate(bid, tid, tie.getArtistTrackRecord());
-            m_altaLink.associate(aid, tid, tie.getAlbumTrackRecord());
-        }
-    }*/
+        associateArtistAndRelease(artist, release);
+    }
     
+    
+    /* ******* *
+     * PRIVATE *
+     * ******* */
     private void checkExistence(DataModelObject... objects) throws IllegalArgumentException
     {
         for(DataModelObject dmo : objects)
@@ -284,10 +299,10 @@ public class MuzakDataModel
         return comp;
     }
     
-    public<E extends Enum<E>> ArrayList<String> outputEnum(Class<E> enumClass)
-    {
-        return MuzakModelUtils.getEnumValues(enumClass);
-    }
+//    public<E extends Enum<E>> ArrayList<String> outputEnum(Class<E> enumClass)
+//    {
+//        return MuzakModelUtils.getEnumValues(enumClass);
+//    }
     public void outputArtists()
     {
         m_artists.output();

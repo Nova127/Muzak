@@ -254,6 +254,12 @@ public class Musician extends AbstractDataModelObject implements Serializable
     @Override
     public String getShortInfoString()
     {
+        return getName();
+    }
+    
+    @Override
+    public String getListString()
+    {
         return getListName();
     }
     

@@ -21,5 +21,6 @@ public interface DataModelObject extends Comparable<DataModelObject>
     void setDiscogsResourceUri(String uri);
     
     String getShortInfoString();
+    String getListString();
     String toString();
 }

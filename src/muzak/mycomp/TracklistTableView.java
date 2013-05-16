@@ -167,7 +167,7 @@ public class TracklistTableView extends TableView<TrackInfoElement>
         });
         
         /* Setup Track Rating column. */
-        final ArrayList<String> ratings = new ArrayList<>();
+/*        final ArrayList<String> ratings = new ArrayList<>();
         for(String key : rvals.keySet())
             ratings.add(rvals.getString(key));
         Collections.sort(ratings);
@@ -189,22 +189,22 @@ public class TracklistTableView extends TableView<TrackInfoElement>
             {
                 return new ComboBoxTableCell<>(FXCollections.observableArrayList(ratings));
             }
-        });
+        });*/
         
         
         
         ocol.setMinWidth(50.0);
         tcol.setMinWidth(150.0);
-        tcol.setPrefWidth(200.0);
+        tcol.setPrefWidth(300.0);
         lcol.setMinWidth(80.0);
         ccol.setMinWidth(50.0);
-        rcol.setMinWidth(100.0);
+        //rcol.setMinWidth(100.0);
         
         getColumns().add(ocol);
         getColumns().add(tcol);
         getColumns().add(lcol);
         getColumns().add(ccol);
-        getColumns().add(rcol);
+        //getColumns().add(rcol);
         
         setEditable(true);
     }

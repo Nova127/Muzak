@@ -54,7 +54,7 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
     private TablessTextArea         ui_commentArea          = new TablessTextArea();
     private Button                  ui_discogsButton        = getDiscogsButton();
     /* Phase 1 UI components: */
-    private MultiSelectionListView  ui_performersChoice     = new MultiSelectionListView(false);
+    private MultiSelectionListView  ui_artistsChoice     = new MultiSelectionListView(false);
     private Button                  ui_createArtistButton   = new Button();
     /* Phase 2 UI components: */
     private TracklistTableView      ui_tracklistTable       = null;
@@ -93,7 +93,7 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
         UIUtils.populate(ui_ratingChoice, config.getResources(Resources.LIST_OF_RATINGS));
         ui_typeList.insertSelectionElements(config.getResources(Resources.LIST_OF_RELEASE_TYPES));
         ui_mediaList.insertSelectionElements(config.getResources(Resources.LIST_OF_RELEASE_MEDIA));
-        ui_performersChoice.insertSelectionElements(m_observer.getArtists());
+        ui_artistsChoice.insertSelectionElements(m_observer.getArtists());
         setTitle(res.getString("DIALOG_TITLE"));
         
         super.prepare();
@@ -103,7 +103,7 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
     public void update()
     {
         if(m_observer != null)
-            ui_performersChoice.insertSelectionElements(m_observer.getArtists());
+            ui_artistsChoice.insertSelectionElements(m_observer.getArtists());
         
         System.out.println("ARTIST UPDATE");
     }
@@ -231,15 +231,9 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
         return MyUtils.trimWhitespaces(ui_commentArea.getText());
     }
     
-    public ArrayList<KeyValueCombo> getPerformers()
+    public ArrayList<KeyValueCombo> getArtists()
     {
-        return ui_performersChoice.getSelected();
-    }
-    
-    public void output()
-    {
-        for(KeyValueCombo kvc : ui_performersChoice.getSelected())
-            System.out.println(kvc);
+        return ui_artistsChoice.getSelected();
     }
     
     @Override
@@ -257,18 +251,18 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
             
             if(singleSelect)
             {
-                if(!ui_performersChoice.isSingleModeOn())
+                if(!ui_artistsChoice.isSingleModeOn())
                 {
-                    ui_performersChoice.switchToSingleMode();
-                    ui_performersChoice.insertSelectionElements(m_observer.getArtists());
+                    ui_artistsChoice.switchToSingleMode();
+                    ui_artistsChoice.insertSelectionElements(m_observer.getArtists());
                 }
             }
             else
             {
-                if(!ui_performersChoice.isMultiModeOn())
+                if(!ui_artistsChoice.isMultiModeOn())
                 {
-                    ui_performersChoice.switchToMultiMode();
-                    ui_performersChoice.insertSelectionElements(m_observer.getArtists());
+                    ui_artistsChoice.switchToMultiMode();
+                    ui_artistsChoice.insertSelectionElements(m_observer.getArtists());
                 }
             }
         }
@@ -290,7 +284,7 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
     private void populateSummary()
     {
         String contents = "";
-        for(KeyValueCombo kvc : getPerformers())
+        for(KeyValueCombo kvc : getArtists())
         {
             contents += kvc.getValue() + "\n";
         }
@@ -402,7 +396,7 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
             }
         });
         
-        VBox box = UIUtils.vLayout(15.0, new Label(res.getString("PERFORMER_GUIDE")), ui_performersChoice, UIUtils.getVStretcher(), ui_createArtistButton);
+        VBox box = UIUtils.vLayout(15.0, new Label(res.getString("PERFORMER_GUIDE")), ui_artistsChoice, UIUtils.getVStretcher(), ui_createArtistButton);
         box.getStyleClass().setAll("glass-pane", "dialog-phase");
         
         return box;

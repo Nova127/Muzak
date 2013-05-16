@@ -10,7 +10,6 @@ public class TrackInfoElement
     private final SimpleStringProperty title;
     private final SimpleStringProperty length;
     private final SimpleBooleanProperty cover;
-    private final SimpleStringProperty rating;
     
     public TrackInfoElement()
     {
@@ -18,16 +17,22 @@ public class TrackInfoElement
         this.title      = new SimpleStringProperty();
         this.length     = new SimpleStringProperty();
         this.cover      = new SimpleBooleanProperty();
-        this.rating     = new SimpleStringProperty();
     }
     
-    public TrackInfoElement(String ordinal, String title, String length, boolean cover, String rating)
+    public TrackInfoElement(String ordinal, String title, String length, boolean cover)
     {
         this.ordinal    = new SimpleStringProperty(ordinal);
         this.title      = new SimpleStringProperty(title);
         this.length     = new SimpleStringProperty(length);
         this.cover      = new SimpleBooleanProperty(cover);
-        this.rating     = new SimpleStringProperty(rating);
+    }
+    
+    public TrackInfoElement(Track track, ReleaseTrackRecord rtrecord, boolean cover)
+    {
+        this.ordinal    = new SimpleStringProperty(rtrecord.getOrdinal());
+        this.title      = new SimpleStringProperty(track.getTitle());
+        this.length     = new SimpleStringProperty(rtrecord.getLengthString());
+        this.cover      = new SimpleBooleanProperty(cover);
     }
     
     public String getOrdinal()
@@ -50,11 +55,6 @@ public class TrackInfoElement
         return cover.get();
     }
     
-    public String getRating()
-    {
-        return rating.get();
-    }
-    
     public SimpleStringProperty getOrdinalProperty()
     {
         return ordinal;
@@ -74,11 +74,16 @@ public class TrackInfoElement
     {
         return cover;
     }
-
-    public SimpleStringProperty getRatingProperty()
+    
+    public ReleaseTrackRecord getReleaseTrackRecord()
     {
-        return rating;
+        return new ReleaseTrackRecord(this.ordinal.get(), this.length.get());
     }
+    
+/*    public Track getTrack() // TODO: Consider removing this, might lead to unexpected errors...
+    {
+        return MuzakDataModel.createTrack(this.title.get());
+    }*/
     
     public void setOrdinal(String ordinal)
     {
@@ -100,15 +105,10 @@ public class TrackInfoElement
         this.cover.set(cover);
     }
     
-    public void setRating(String rating)
-    {
-        this.rating.set(rating);
-    }
-    
     @Override
     public String toString()
     {
-        return getOrdinal() + " " + getTitle() + " " + getLength() + " " + getCover() + " " + getRating();
+        return getOrdinal() + " \"" + getTitle() + "\" " + getLength() + " " + (getCover() ? "cover" : "");
     }
 }
 
