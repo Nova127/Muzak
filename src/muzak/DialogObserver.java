@@ -9,7 +9,7 @@ import muzakModel.DataModelObject;
 interface DialogObserver
 {
     TreeSet<DataModelObject> getArtists();
-    ArrayList<KeyValueCombo> getDiscogsResults();
+    ArrayList<KeyValueElement> getDiscogsResults();
     void createArtist(DialogCallback callback);
     
     void discogsRequest(DialogCallback callback);

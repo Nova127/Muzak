@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 import muzak.DialogCallback;
 import muzak.KeyValueCombo;
+import muzak.KeyValueElement;
 import muzak.RecordInfoElement;
 import muzak.TrackInfoElement;
 import muzakModel.Artist;
@@ -25,7 +26,7 @@ public class DiscogsWorker extends Thread
     private static final String barStub = "barcode=";
     private String m_query = "";
     private DialogCallback m_callback;
-    private ArrayList<KeyValueCombo> m_resultSet;
+    private static ArrayList<KeyValueElement> m_resultSet;
     private Mode m_mode;
     
     public DiscogsWorker()
@@ -71,14 +72,14 @@ public class DiscogsWorker extends Thread
         m_query = resourceUri;
     }
     
-    public ArrayList<KeyValueCombo> getReleases()
+    public static ArrayList<KeyValueElement> getReleases()
     {
        return m_resultSet;
     }
     
-    private ArrayList<KeyValueCombo> parseSearchReleaseResponse(JSONObject job)
+    private ArrayList<KeyValueElement> parseSearchReleaseResponse(JSONObject job)
     {
-        ArrayList<KeyValueCombo> results = new ArrayList<>();
+        ArrayList<KeyValueElement> results = new ArrayList<>();
         
         if(job == null) return results;
 
@@ -96,7 +97,7 @@ public class DiscogsWorker extends Thread
             result += "CAT#:\t "    + ((JSONObject)res.get(i)).get("catno") + "\n";
             result += "BARCODE: "   + jsonArrayToString(((JSONObject)res.get(i)).get("barcode")) + "\n";
 
-            results.add(new KeyValueCombo(res_url, result));
+            results.add(new KeyValueElement(res_url, result));
             //System.out.println(result + res_url);
         }
         
@@ -156,8 +157,8 @@ public class DiscogsWorker extends Thread
         rie.setRelease(release);
         rie.setTracks(tracklist);
         tracklist = null;
-        for(TrackInfoElement t : rie.getTracklist())
-            System.out.println(t);
+//        for(TrackInfoElement t : rie.getTracklist())
+//            System.out.println(t);
         
         return rie;
     }
@@ -209,6 +210,7 @@ public class DiscogsWorker extends Thread
         m_resultSet = parseSearchReleaseResponse(job);
         
         m_callback.update();
+        System.out.println("INQUIRE EXIT");
     }
     
     public void request() throws IOException, ParseException

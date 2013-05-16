@@ -103,6 +103,8 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
     {
         if(m_observer != null)
             ui_performersChoice.insertSelectionElements(m_observer.getArtists());
+        
+        System.out.println("ARTIST UPDATE");
     }
     
     @Override // from DialogCallback

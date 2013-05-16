@@ -6,18 +6,29 @@ import java.util.ResourceBundle;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Screen;
+import javafx.util.Callback;
+import javafx.util.StringConverter;
 import muzak.Configurations.Resources;
 import muzak.mycomp.MultiSelectionListView;
 
 public class DiscogsResultsDialog extends AbstractPhasedDialog
 {
     private Label                   ui_waiting          = new Label();
-    private MultiSelectionListView  ui_resultsChoice    = new MultiSelectionListView(false);
+    //private MultiSelectionListView  ui_resultsChoice    = new MultiSelectionListView(false);
+    private ListView<KeyValueElement>  ui_resultsChoice    = new ListView<>();
+    private ObservableList<KeyValueElement> m_results = FXCollections.observableArrayList();
     
     public DiscogsResultsDialog(final Configurations config, final DialogObserver observer)
     {
@@ -33,7 +44,7 @@ public class DiscogsResultsDialog extends AbstractPhasedDialog
         setHeight(0.5 * screen.getHeight());
         
         setTitle(res.getString("DIALOG_TITLE"));
-        
+        ui_resultsChoice.setItems(m_results);
         super.prepare();
     }
     
@@ -42,9 +53,13 @@ public class DiscogsResultsDialog extends AbstractPhasedDialog
         String choice = "";
         
         /* Should be only 0 or 1 (expected) selection. */
-        ArrayList<String> selection = ui_resultsChoice.getSelectedKeys();
-        if(!selection.isEmpty())
-            choice = selection.get(0);
+//        ArrayList<String> selection = ui_resultsChoice.getSelectedKeys();
+//        if(!selection.isEmpty())
+//            choice = selection.get(0);
+        KeyValueElement selected = ui_resultsChoice.getSelectionModel().getSelectedItem();
+        if(selected != null)
+            choice = selected.getKey();
+        
         
         return choice;
     }
@@ -52,13 +67,40 @@ public class DiscogsResultsDialog extends AbstractPhasedDialog
     @Override
     public void update()
     {
-        ui_waiting.setVisible(false);
+        m_results.clear();
         
-        ArrayList<KeyValueCombo> res = m_observer.getDiscogsResults();
+        if(m_observer != null)
+            m_results.addAll(m_observer.getDiscogsResults());
+            
+        System.out.println("DISCOGS UPDATE: " + m_results.size());
+    }
+    
+    @Override
+    public void update(ArrayList<KeyValueElement> data)
+    {
+        System.out.println("UPDATE WITH DATA");
         
-        if(res != null)
+        
+        //ArrayList<KeyValueCombo> res = m_observer.getDiscogsResults();
+        
+        if(data != null)
+        {
             /* Don't know why, but control seems to exit this method after calling below function. */
-            ui_resultsChoice.insertSelectionElements(res);
+            //ui_resultsChoice.insertSelectionElements(res);
+            //m_results = FXCollections.observableArrayList();
+//            int i = 0;
+//            for(KeyValueCombo kvc : data)
+//            {
+//                m_results.add(new KeyValueElement(kvc.getKey(), kvc.getValue()));
+//                System.out.println("Add, index = " + ++i);
+//            }
+//            m_results.clear();
+//            m_results.setAll(data);
+            
+            //ui_resultsChoice.setItems(m_results);
+        }
+        
+        ui_waiting.setVisible(false);
     }
     
     @Override
@@ -90,6 +132,30 @@ public class DiscogsResultsDialog extends AbstractPhasedDialog
     {
         ui_waiting.setText(res.getString("WAITING"));
 
+        ui_resultsChoice.setCellFactory(new Callback<ListView<KeyValueElement>, ListCell<KeyValueElement>>() {
+            
+            @Override
+            public ListCell<KeyValueElement> call(ListView<KeyValueElement> arg0) {
+                // TODO Auto-generated method stub
+                return new ListCell<KeyValueElement>() {
+                    
+                    @Override
+                    public void updateItem(KeyValueElement item, boolean empty)
+                    {
+                        super.updateItem(item, empty);
+                        if(empty)
+                        {
+                            setGraphic(null);
+                        }
+                        else
+                        {
+                            setGraphic(new Label(item.getValue()));
+                        }
+                    }
+                };
+            }
+        });
+        
         VBox box = UIUtils.vLayout(10.0, UIUtils.hLayoutCentered(ui_waiting), ui_resultsChoice);
         box.getStyleClass().addAll("glass-pane", "dialog-phase");
         

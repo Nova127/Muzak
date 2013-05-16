@@ -108,12 +108,14 @@ public class MainControl implements DialogObserver, ViewModDelObserver
     }
     
     @Override
-    public ArrayList<KeyValueCombo> getDiscogsResults()
+    public ArrayList<KeyValueElement> getDiscogsResults()
     {
-        if(m_discogs == null)
-            return new ArrayList<>();
-            
-        return m_discogs.getReleases();
+//        if(m_discogs == null)
+//            return new ArrayList<KeyValueElement>();
+//            
+//        return m_discogs.getReleases();
+        
+        return DiscogsWorker.getReleases();
     }
     
     @Override
@@ -126,10 +128,10 @@ public class MainControl implements DialogObserver, ViewModDelObserver
     @Override
     public void discogsRequest(DialogCallback callback)
     {
-        m_discogs = new DiscogsWorker();
-        m_discogs.searchReleases(callback.getQueryTitle(), callback.getQueryCatNumber(), callback.getQueryBarcode());
+        DiscogsWorker discogs = new DiscogsWorker();
+        discogs.searchReleases(callback.getQueryTitle(), callback.getQueryCatNumber(), callback.getQueryBarcode());
         //System.out.println("MainControl / Discogs request");
-        showDiscogsResultsDialog(callback, m_discogs);
+        showDiscogsResultsDialog(callback, discogs);
     }
     
     public void handleSearchAction(String searchString, String filter)

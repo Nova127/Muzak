@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 import java.util.TreeSet;
 
 import muzak.KeyValueCombo;
+import muzak.SelectionElement;
 import muzak.UIUtils;
 import muzakModel.DataModelObject;
 
@@ -16,6 +17,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -26,56 +28,7 @@ import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 
-class SelectionElement implements Comparable<SelectionElement>
-{
-    private final StringProperty    techKey;
-    private final StringProperty    displayKey;
-    private final BooleanProperty   selectionValue;
-    
-    public SelectionElement(String techKey, String displayKey)
-    {
-        this.techKey        = new SimpleStringProperty(techKey);
-        this.displayKey     = new SimpleStringProperty(displayKey);
-        this.selectionValue = new SimpleBooleanProperty(false);
-    }
-    
-    public SelectionElement(KeyValueCombo kvcombo)
-    {
-        this.techKey        = new SimpleStringProperty(kvcombo.getKey());
-        this.displayKey     = new SimpleStringProperty(kvcombo.getValue());
-        this.selectionValue = new SimpleBooleanProperty(false);
-    }
-    
-    public BooleanProperty getSelectionValueProperty()
-    {
-        return this.selectionValue;
-    }
-    
-    public String getTechKey()
-    {
-        return this.techKey.get();
-    }
-    public String getDisplayKey()
-    {
-        return this.displayKey.get();
-    }
-    public Boolean getSelectionValue()
-    {
-        return this.selectionValue.get();
-    }
-    
-    @Override
-    public String toString()
-    {
-        return displayKey.get();
-    }
 
-    @Override
-    public int compareTo(SelectionElement other)
-    {
-        return techKey.get().compareTo(other.techKey.get());
-    }
-}
 
 class RadioCell extends ListCell<SelectionElement>
 {
@@ -111,11 +64,12 @@ public class MultiSelectionListView extends ListView<SelectionElement>// impleme
 {
     private boolean     m_multiSelectionMode = true;
     private ToggleGroup m_toggles            = new ToggleGroup();
+    private ObservableList<SelectionElement> m_data = FXCollections.observableArrayList();
     
     public MultiSelectionListView(boolean multiSelectionMode)
     {
         m_multiSelectionMode = multiSelectionMode;
-        
+        this.setItems(m_data);
         setupCellFactory();
     }
     
@@ -149,11 +103,11 @@ public class MultiSelectionListView extends ListView<SelectionElement>// impleme
     {
         ArrayList<SelectionElement> items = new ArrayList<>();
         for(String key : res.keySet())
-            items.add(new SelectionElement(key, res.getString(key)));
+            m_data.add(new SelectionElement(key, res.getString(key)));//items.add(new SelectionElement(key, res.getString(key)));
         
-        Collections.sort(items);
+        //Collections.sort(items);
         
-        this.setItems(FXCollections.observableArrayList(items));
+        //this.setItems(FXCollections.observableArrayList(items));
     }
     
     public void insertSelectionElements(TreeSet<DataModelObject> combos)
@@ -167,11 +121,15 @@ public class MultiSelectionListView extends ListView<SelectionElement>// impleme
     
     public void insertSelectionElements(ArrayList<KeyValueCombo> combos)
     {
+        m_data.clear();
         ArrayList<SelectionElement> items = new ArrayList<>();
         for(KeyValueCombo kvc : combos)
+            //m_data.add(new SelectionElement(kvc));
             items.add(new SelectionElement(kvc.getKey(), kvc.getValue()));
         
+        //m_data = FXCollections.observableArrayList(items);
         this.setItems(FXCollections.observableArrayList(items));
+        System.out.println("MSLV/insert");
     }
     
     public ArrayList<KeyValueCombo> getSelected()

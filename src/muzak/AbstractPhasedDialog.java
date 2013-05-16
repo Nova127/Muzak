@@ -81,6 +81,9 @@ public abstract class AbstractPhasedDialog extends Stage implements DialogCallba
     @Override // from DialogCallback
     public void update() {}
     
+    @Override
+    public void update(ArrayList<KeyValueElement> data) {}
+    
     @Override // from DialogCallback
     public String getQueryTitle() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
