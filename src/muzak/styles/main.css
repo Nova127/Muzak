@@ -89,8 +89,9 @@
 .tab-pane .tab-header-area .tab-header-background
 {
     -fx-background-color: transparent;
-    -fx-border-style: solid;
-    -fx-border-color: black;
+    /*-fx-border-style: solid;*/
+    -fx-border-color: transparent;
+    -fx-padding: 10.0;
 }
 
 

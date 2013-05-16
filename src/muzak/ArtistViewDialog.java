@@ -1,6 +1,8 @@
 package muzak;
 
 import java.util.TreeSet;
+
+import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
@@ -39,14 +41,13 @@ public class ArtistViewDialog extends AbstractPhasedDialog
         spane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         spane.setFitToWidth(true);
         VBox box = new VBox();
-        //Group box = new Group();
+        box.setPadding(new Insets(10.0));
         for(Release rel : releases)
             box.getChildren().add(UIUtils.getReleaseCard(rel, m_config, new TablessTextArea()));
         
         spane.setContent(box);
         rtab.setContent(spane);
         ui_tpane.getTabs().add(rtab);
-        
     }
     
 
@@ -76,7 +77,7 @@ public class ArtistViewDialog extends AbstractPhasedDialog
 //        tpane.getTabs().addAll(tabr, taba, tabt, tabm);
         
         BorderPane box = new BorderPane();
-        box.getStyleClass().addAll("glass-pane", "dialog-phase");
+        box.setStyle("-fx-background-color: transparent;");
         box.setTop(card);
         box.setCenter(ui_tpane);
         
