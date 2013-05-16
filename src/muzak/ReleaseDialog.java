@@ -32,6 +32,7 @@ import muzak.mycomp.MultiSelectionListView;
 import muzak.mycomp.TablessTextArea;
 import muzak.mycomp.TracklistTableView;
 import muzakModel.Release;
+import muzakModel.TrackInfoElement;
 
 public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallback
 {

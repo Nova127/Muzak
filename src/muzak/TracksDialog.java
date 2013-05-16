@@ -17,6 +17,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import muzak.Configurations.Resources;
 import muzak.mycomp.TracklistTableView;
+import muzakModel.TrackInfoElement;
 
 public class TracksDialog extends AbstractPhasedDialog
 {

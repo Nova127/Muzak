@@ -6,6 +6,7 @@ import muzakModel.Artist;
 import muzakModel.Musician;
 import muzakModel.MuzakDataModel;
 import muzakModel.Release;
+import muzakModel.TrackInfoElement;
 
 public class RecordInfoElement
 {

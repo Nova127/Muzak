@@ -8,9 +8,9 @@ import muzak.DialogCallback;
 import muzak.KeyValueCombo;
 import muzak.KeyValueElement;
 import muzak.RecordInfoElement;
-import muzak.TrackInfoElement;
 import muzakModel.Artist;
 import muzakModel.Release;
+import muzakModel.TrackInfoElement;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;

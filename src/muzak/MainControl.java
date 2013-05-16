@@ -10,6 +10,7 @@ import muzak.mycomp.ViewModDelObserver;
 import muzakModel.Artist;
 import muzakModel.DataModelObject;
 import muzakModel.MuzakDataModel;
+import muzakModel.TrackInfoElement;
 import muzakModel.MuzakDataModel.Order;
 import muzakModel.MuzakDataModel.Tables;
 import muzakModel.Release;

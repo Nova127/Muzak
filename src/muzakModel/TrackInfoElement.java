@@ -1,121 +1,137 @@
 
 package muzakModel;
 
-import muzakModel.ArtistTrackRecord.TrackType;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 
 public class TrackInfoElement
 {
-    private Track               m_track;
-    private ArtistTrackRecord   m_artistTrackRecord;
-    private ReleaseTrackRecord    m_albumTrackRecord;
+    private final SimpleStringProperty ordinal;
+    private final SimpleStringProperty title;
+    private final SimpleStringProperty length;
+    private final SimpleBooleanProperty cover;
+    private final SimpleStringProperty rating;
     
-    public TrackInfoElement(String title, String ordinal)
+    public TrackInfoElement()
     {
-        super();
-        //m_track             = new Track(title);
-        m_artistTrackRecord = new ArtistTrackRecord(TrackType.PROPRIETARY);
-        m_albumTrackRecord  = new ReleaseTrackRecord(ordinal);
-    }
-    public TrackInfoElement(String title, int ordinal)
-    {
-        super();
-        //m_track             = new Track(title);
-        m_artistTrackRecord = new ArtistTrackRecord(TrackType.PROPRIETARY);
-        m_albumTrackRecord  = new ReleaseTrackRecord(Integer.toString(ordinal));
-    }
-    public TrackInfoElement(String title, String ordinal, TrackType type)
-    {
-        super();
-        //m_track             = new Track(title);
-        m_artistTrackRecord = new ArtistTrackRecord(type);
-        m_albumTrackRecord  = new ReleaseTrackRecord(ordinal);
-    }
-    public TrackInfoElement(String title, int ordinal, TrackType type)
-    {
-        super();
-        //m_track             = new Track(title);
-        m_artistTrackRecord = new ArtistTrackRecord(type);
-        m_albumTrackRecord  = new ReleaseTrackRecord(Integer.toString(ordinal));
+        this.ordinal    = new SimpleStringProperty();
+        this.title      = new SimpleStringProperty();
+        this.length     = new SimpleStringProperty();
+        this.cover      = new SimpleBooleanProperty();
+        this.rating     = new SimpleStringProperty();
     }
     
-    /* Getters for each property. */
-    public String getTitle()
+    public TrackInfoElement(String ordinal, String title, String length, boolean cover, String rating)
     {
-        return m_track.getTitle();
+        this.ordinal    = new SimpleStringProperty(ordinal);
+        this.title      = new SimpleStringProperty(title);
+        this.length     = new SimpleStringProperty(length);
+        this.cover      = new SimpleBooleanProperty(cover);
+        this.rating     = new SimpleStringProperty(rating);
     }
+    
     public String getOrdinal()
     {
-        return m_albumTrackRecord.getOrdinal();
-    }
-    public int getLength()
-    {
-        return m_albumTrackRecord.getLength();
-    }
-    public String getTypeString()
-    {
-        return m_artistTrackRecord.getTrackTypeString();
-    }
-    public int getRating()
-    {
-        return m_artistTrackRecord.getRating();
+        return ordinal.get();
     }
     
-    /* Getters for each individual element. Package wide visibility. */
-    Track getTrack()
+    public String getTitle()
     {
-        return m_track;
-    }
-    ArtistTrackRecord getArtistTrackRecord()
-    {
-        return m_artistTrackRecord;
-    }
-    ReleaseTrackRecord getAlbumTrackRecord()
-    {
-        return m_albumTrackRecord;
+        return title.get();
     }
     
-    public boolean isValid()
+    public String getLength()
     {
-        return (m_track.isValid() && m_artistTrackRecord.isValid() && m_albumTrackRecord.isValid());
+        return length.get();
     }
     
-    /* Setters for each property. */
-    public void setTitle(String title)
+    public boolean getCover()
     {
-        m_track.setTitle(title);
+        return cover.get();
     }
+    
+    public String getRating()
+    {
+        return rating.get();
+    }
+    
+    public SimpleStringProperty getOrdinalProperty()
+    {
+        return ordinal;
+    }
+
+    public SimpleStringProperty getTitleProperty()
+    {
+        return title;
+    }
+
+    public SimpleStringProperty getLengthProperty()
+    {
+        return length;
+    }
+
+    public SimpleBooleanProperty getCoverProperty()
+    {
+        return cover;
+    }
+
+    public SimpleStringProperty getRatingProperty()
+    {
+        return rating;
+    }
+    
     public void setOrdinal(String ordinal)
     {
-        m_albumTrackRecord.setOrdinal(ordinal);
-    }
-    public void setLength(int length)
-    {
-        m_albumTrackRecord.setLength(length);
-    }
-    public void addType(ArtistTrackRecord.TrackType type)
-    {
-        m_artistTrackRecord.addType(type);
-    }
-    public void setType(ArtistTrackRecord.TrackType type)
-    {
-        m_artistTrackRecord.setType(type);
-    }
-    public void setRating(int rating)
-    {
-        m_artistTrackRecord.setRating(rating);
+        this.ordinal.set(ordinal);
     }
     
-    /* Setters for each individual element. Package wide visibility. */
-    void setTrack(Track track)
+    public void setTitle(String title)
     {
-        m_track = track;
+        this.title.set(title);
     }
-    void setArtistTrackRecord(ArtistTrackRecord artistTrackRecord)
+    
+    public void setLength(String length)
     {
-        m_artistTrackRecord = artistTrackRecord;
+        this.length.set(length);
     }
-    void setAlbumTrackRecord(ReleaseTrackRecord albumTrackRecord)
+    
+    public void setCover(boolean cover)
     {
-        m_albumTrackRecord = albumTrackRecord;
+        this.cover.set(cover);
+    }
+    
+    public void setRating(String rating)
+    {
+        this.rating.set(rating);
+    }
+    
+    @Override
+    public String toString()
+    {
+        return getOrdinal() + " " + getTitle() + " " + getLength() + " " + getCover() + " " + getRating();
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

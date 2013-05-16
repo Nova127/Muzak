@@ -18,8 +18,8 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import muzak.Configurations;
-import muzak.TrackInfoElement;
 import muzak.Configurations.Resources;
+import muzakModel.TrackInfoElement;
 
 public class TracklistTableView extends TableView<TrackInfoElement>
 {
