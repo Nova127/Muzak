@@ -100,9 +100,14 @@ public class ReleaseTrackRecord implements Serializable
         
         try
         {
-            for(int i = bits.length-1, k = 0; i >= 0; --i, ++k)
+            value += Integer.parseInt(bits[0]);         // Seconds
+            
+            if(bits.length > 1)
             {
-                value += Integer.parseInt(bits[i]) * k*60;
+                value += Integer.parseInt(bits[1]) * 60;    // Minutes
+                
+                if(bits.length > 2)
+                    value += Integer.parseInt(bits[2]) * 3600;  // Hours
             }
         }
         catch(NumberFormatException e)

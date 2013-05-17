@@ -188,7 +188,36 @@ public class MuzakDataModel
         /* Throws IAE, if check fails and thus prevents associations. */
         checkExistence(artist, release);
         
-        long aid = artist.getID(), rid = release.getID();
+        putTracklist(tracklist, artist.getID(), release.getID());
+        
+/*        long aid = artist.getID(), rid = release.getID();
+        Track track = null;
+        
+        for(TrackInfoElement tie : tracklist)
+        {
+            track = new Track(generateUniqueID(), tie.getTitle());
+            
+            m_tracks.insert(track);
+            
+            m_artaLink.associate(aid, track.getID(), tie.getCover());
+            m_retaLink.associate(rid, track.getID(), tie.getReleaseTrackRecord());
+        }*/
+    }
+    
+    public void     insertTracklist(TreeSet<TrackInfoElement> tracklist, long aid, long rid)
+           throws   IllegalArgumentException, NotUniqueSignatureException
+    {
+        if(m_artists.containsKey(aid) && m_releases.containsKey(rid))
+        {
+            putTracklist(tracklist, aid, rid);
+        }
+        else
+            throw new IllegalArgumentException("Inexistent Artist or Release ID.");
+    }
+    
+    private void     putTracklist(TreeSet<TrackInfoElement> tracklist, long aid, long rid)
+            throws   IllegalArgumentException, NotUniqueSignatureException
+    {
         Track track = null;
         
         for(TrackInfoElement tie : tracklist)

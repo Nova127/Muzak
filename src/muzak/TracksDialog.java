@@ -31,6 +31,8 @@ public class TracksDialog extends AbstractPhasedDialog
     private ComboBox<KeyValueElement>   ui_artistChoice     = new ComboBox<>();
     private ListView<KeyValueElement>   ui_releaseChoice    = new ListView<>();
     /* Phase 2 UI components. */
+    private Label                       ui_headerLabel      = new Label();
+    private Label                       ui_selectionLabel   = new Label();
     private TextField                   ui_ordinalField     = new TextField();
     private TextField                   ui_titleField       = new TextField();
     private TextField                   ui_lengthField      = new TextField();
@@ -59,7 +61,41 @@ public class TracksDialog extends AbstractPhasedDialog
         super.prepare();
     }
     
-    public ArrayList<TrackInfoElement> getData()
+    public long getArtistID()
+    {
+        long aid = 0L;
+        
+        try
+        {
+            aid = Long.parseLong(ui_artistChoice.getSelectionModel().getSelectedItem().getKey());
+        }
+        catch(NumberFormatException | NullPointerException e)
+        {
+            /* If data in the ComboBox originates from MDM, NFE shouldn't really happen.
+             * NPE can occur, if user f.eg. accepts the Dialog without having selected any artist. */
+        }
+        
+        return aid;
+    }
+    
+    public long getReleaseID()
+    {
+        long rid = 0L;
+        
+        try
+        {
+            rid = Long.parseLong(ui_releaseChoice.getSelectionModel().getSelectedItem().getKey());
+        }
+        catch(NumberFormatException | NullPointerException e)
+        {
+            /* If data in the ComboBox originates from MDM, NFE shouldn't really happen.
+             * NPE can occur, if user f.eg. accepts the Dialog without having selected any release. */
+        }
+        
+        return rid;
+    }
+    
+    public ArrayList<TrackInfoElement> getTracklist()
     {
         return ui_tableView.getTableData();
     }
@@ -67,11 +103,24 @@ public class TracksDialog extends AbstractPhasedDialog
     @Override
     protected void proceed()
     {
+        KeyValueElement kve = ui_artistChoice.getSelectionModel().getSelectedItem();
+        
+        if(kve != null)
+        {
+            String txt = ": " + kve.getValue() + " - ";
+            kve = ui_releaseChoice.getSelectionModel().getSelectedItem();
+            
+            if(kve != null)
+            {
+                ui_selectionLabel.setText(txt + kve.getValue());
+            }
+        }
     }
 
     @Override
     protected void rollBack()
     {
+        ui_selectionLabel.setText("");
     }
     
     private TrackInfoElement makeTrackInfo()
@@ -91,6 +140,8 @@ public class TracksDialog extends AbstractPhasedDialog
     
     private Pane createTracksForm(ResourceBundle res)
     {
+        ui_headerLabel.setText(res.getString("DIALOG_TITLE"));
+        
         ui_ordinalField.setPromptText("#");
         UIUtils.setFixedWidth(ui_ordinalField, 80.0);
         
@@ -131,7 +182,7 @@ public class TracksDialog extends AbstractPhasedDialog
         
         VBox.setVgrow(ui_tableView, Priority.ALWAYS);
         
-        VBox box = UIUtils.vLayout(10.0, ui_tableView, hbox, ui_discogs);
+        VBox box = UIUtils.vLayout(10.0, UIUtils.hLayout(0, ui_headerLabel, ui_selectionLabel), ui_tableView, hbox, ui_discogs);
         box.getStyleClass().addAll("glass-pane", "dialog-phase");
         
         return box;

@@ -4,11 +4,11 @@ package muzakModel;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-public class TrackInfoElement
+public class TrackInfoElement implements Comparable<TrackInfoElement>
 {
-    private final SimpleStringProperty ordinal;
-    private final SimpleStringProperty title;
-    private final SimpleStringProperty length;
+    private final SimpleStringProperty  ordinal;
+    private final SimpleStringProperty  title;
+    private final SimpleStringProperty  length;
     private final SimpleBooleanProperty cover;
     
     public TrackInfoElement()
@@ -109,6 +109,12 @@ public class TrackInfoElement
     public String toString()
     {
         return getOrdinal() + " \"" + getTitle() + "\" " + getLength() + " " + (getCover() ? "cover" : "");
+    }
+
+    @Override
+    public int compareTo(TrackInfoElement other)
+    {
+        return this.ordinal.get().compareTo(other.ordinal.get());
     }
 }
 

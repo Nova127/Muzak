@@ -280,8 +280,24 @@ public class MainControl implements DialogObserver, ViewModDelObserver
         
         if(dialog.execute())
         {
-            for(TrackInfoElement tie : dialog.getData())
-                System.out.println(tie);
+            try
+            {
+                m_model.insertTracklist(new TreeSet<>(dialog.getTracklist()), dialog.getArtistID(), dialog.getReleaseID());
+            }
+            catch(IllegalArgumentException e)
+            {
+                e.printStackTrace();
+            }
+            catch(NotUniqueSignatureException e)
+            {
+                e.printStackTrace();
+            }
+            
+            m_model.outputArtists();
+            m_model.outputBTAssociations();
+            m_model.outputTracks();
+            m_model.outputATAssociations();
+            m_model.outputReleases();
         }
         else
         {
