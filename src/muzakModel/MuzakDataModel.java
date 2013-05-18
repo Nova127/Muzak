@@ -213,6 +213,9 @@ public class MuzakDataModel
         }
         else
             throw new IllegalArgumentException("Inexistent Artist or Release ID.");
+        
+        m_artaLink.removeNullAssociation(aid);
+        m_retaLink.removeNullAssociation(rid);
     }
     
     private void     putTracklist(TreeSet<TrackInfoElement> tracklist, long aid, long rid)

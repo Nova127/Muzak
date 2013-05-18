@@ -391,9 +391,29 @@ public class Release extends AbstractDataModelObject implements Serializable
         m_orgYear = orgYear;
     }
     
+    public void setOrgYear(String orgYear)
+    {
+        try
+        {
+            m_orgYear = Integer.parseInt(orgYear);
+        }
+        catch(NumberFormatException e)
+        {}
+    }
+    
     public void setCurYear(int curYear)
     {
         m_curYear = curYear;
+    }
+    
+    public void setCurYear(String curYear)
+    {
+        try
+        {
+            m_curYear = Integer.parseInt(curYear);
+        }
+        catch(NumberFormatException e)
+        {}
     }
     
     public void setDiscs(int discs)

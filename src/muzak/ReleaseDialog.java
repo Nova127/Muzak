@@ -46,11 +46,11 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
     private MultiSelectionListView  ui_mediaList            = new MultiSelectionListView(true);
     private ToggleGroup             ui_releaseOptions       = new ToggleGroup();
     private CheckBox                ui_extendedOption       = new CheckBox();
-    private ComboBox<String>        ui_orgYearChoice        = new ComboBox<>();
-    private ComboBox<String>        ui_curYearChoice        = new ComboBox<>();
+    private TextField               ui_curYearField         = new TextField();
+    private TextField               ui_orgYearField         = new TextField();
     private IntegerSpinnerPane      ui_discCount            = new IntegerSpinnerPane();
     private ComboBox<KeyValueCombo> ui_styleChoice          = new ComboBox<>();
-    private ComboBox<KeyValueCombo> ui_ratingChoice         = new ComboBox<>();
+    //private ComboBox<KeyValueCombo> ui_ratingChoice         = new ComboBox<>();
     private TablessTextArea         ui_commentArea          = new TablessTextArea();
     private Button                  ui_discogsButton        = getDiscogsButton();
     /* Phase 1 UI components: */
@@ -88,9 +88,9 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
         super.addPhase(createReleaseSummary(res));
         
         UIUtils.populate(ui_styleChoice, config.getResources(Resources.LIST_OF_STYLES));
-        UIUtils.populate(ui_curYearChoice, config.getReleasedStartValue(), config.getReleasedEndValue());
-        UIUtils.populate(ui_orgYearChoice, config.getReleasedStartValue(), config.getReleasedEndValue());
-        UIUtils.populate(ui_ratingChoice, config.getResources(Resources.LIST_OF_RATINGS));
+        //UIUtils.populate(ui_curYearChoice, config.getReleasedStartValue(), config.getReleasedEndValue());
+        //UIUtils.populate(ui_orgYearChoice, config.getReleasedStartValue(), config.getReleasedEndValue());
+        //UIUtils.populate(ui_ratingChoice, config.getResources(Resources.LIST_OF_RATINGS));
         ui_typeList.insertSelectionElements(config.getResources(Resources.LIST_OF_RELEASE_TYPES));
         ui_mediaList.insertSelectionElements(config.getResources(Resources.LIST_OF_RELEASE_MEDIA));
         ui_artistsChoice.insertSelectionElements(m_observer.getArtists());
@@ -193,18 +193,14 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
         return ui_extendedOption.selectedProperty().get();
     }
     
-    public int getOriginalYear()
+    public String getCurrentYear()
     {
-        String val = ui_orgYearChoice.getSelectionModel().getSelectedItem();
-        
-        return (val != null ? Integer.parseInt(val) : -1);
+        return ui_curYearField.getText();
     }
     
-    public int getCurrentYear()
+    public String getOriginalYear()
     {
-        String val = ui_curYearChoice.getSelectionModel().getSelectedItem();
-        
-        return (val != null ? Integer.parseInt(val) : getIsOriginal() ? getOriginalYear() : -1);
+        return ui_orgYearField.getText();
     }
     
     public int getDiscCount()
@@ -219,12 +215,12 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
         return (kvc != null ? kvc.getKey() : "");
     }
     
-    public int getRating()
+/*    public int getRating()
     {
         KeyValueCombo kvc = ui_ratingChoice.getSelectionModel().getSelectedItem();
         
         return (kvc != null ? Integer.parseInt(kvc.getKey()) : 0);
-    }
+    }*/
     
     public String getComment()
     {
@@ -234,6 +230,11 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
     public ArrayList<KeyValueCombo> getArtists()
     {
         return ui_artistsChoice.getSelected();
+    }
+    
+    public ArrayList<TrackInfoElement> getTracklist()
+    {
+        return ui_tracklistTable.getTableData();
     }
     
     @Override
@@ -306,11 +307,7 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
         
         ui_releaseValue.setText(tmp);
         
-        int year = getCurrentYear();
-        tmp = (year > 0 ? Integer.toString(year) : "-") + "/";
-        year = getOriginalYear();
-        tmp += (year > 0 ? Integer.toString(year) : "-");
-        
+        tmp = (getCurrentYear().isEmpty() ? "-" : getCurrentYear()) + "/" + (getOriginalYear().isEmpty() ? "-" : getOriginalYear());
         ui_yearsValue.setText(tmp);
         
         ui_discsValue.setText(Integer.toString(getDiscCount()));
@@ -318,8 +315,8 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
         KeyValueCombo kvc = ui_styleChoice.getSelectionModel().getSelectedItem();
         ui_styleValue.setText(kvc != null ? kvc.getValue() : "");
         
-        KeyValueCombo rating = ui_ratingChoice.getSelectionModel().getSelectedItem();
-        ui_ratingValue.setText(rating != null ? rating.getValue() : "");
+//        KeyValueCombo rating = ui_ratingChoice.getSelectionModel().getSelectedItem();
+//        ui_ratingValue.setText(rating != null ? rating.getValue() : "");
         
         ui_commentValue.setText(getComment());
     }
@@ -443,9 +440,8 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
         pane.add(new Label(res.getString("ORIGINAL")), 3, 6);
         pane.add(new Label(res.getString("DISCS")), 0, 7);
         pane.add(new Label(res.getString("STYLE")), 0, 8);
-        pane.add(new Label(res.getString("RATING")), 0, 9);
-        pane.add(new Label(res.getString("COMMENT")), 0, 10);
-        pane.add(UIUtils.hLayout(0, UIUtils.getHStretcher(), ui_discogsButton, UIUtils.getHStretcher()), 0, 11);
+        pane.add(new Label(res.getString("COMMENT")), 0, 9);
+        pane.add(UIUtils.hLayout(0, UIUtils.getHStretcher(), ui_discogsButton, UIUtils.getHStretcher()), 0, 10);
         
         pane.add(ui_titleField, 1, 0, 4, 1);
         pane.add(ui_altTitleField, 1, 1, 4, 1);
@@ -454,15 +450,12 @@ public class ReleaseDialog extends AbstractPhasedDialog// implements DialogCallb
         pane.add(UIUtils.vLayout(10.0, new Label(res.getString("TYPE_GUIDE")), ui_typeList), 1, 4, 2, 1);
         pane.add(UIUtils.vLayout(10.0, new Label(res.getString("MEDIA_GUIDE")), ui_mediaList), 3, 4, 2, 1);
         pane.add(UIUtils.hLayout(15.0, oopt, ropt, UIUtils.getHStretcher(), ui_extendedOption), 1, 5, 4, 1);
-        pane.add(ui_curYearChoice, 2, 6);
-        pane.add(ui_orgYearChoice, 4, 6);
+        pane.add(ui_curYearField, 2, 6);
+        pane.add(ui_orgYearField, 4, 6);
         pane.add(ui_discCount, 1, 7, 4, 1);
         pane.add(ui_styleChoice, 1, 8, 4, 1);
-        pane.add(ui_ratingChoice, 1, 9, 4, 1);
-        pane.add(ui_commentArea, 1, 10, 4, 1);
+        pane.add(ui_commentArea, 1, 9, 4, 1);
         
         return pane;
     }
-
-    
 }

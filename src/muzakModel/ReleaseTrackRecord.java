@@ -96,26 +96,24 @@ public class ReleaseTrackRecord implements Serializable
             return 0;
         }
         
-        int value = 0;
+        Double value = 0.0;
         
         try
         {
-            value += Integer.parseInt(bits[0]);         // Seconds
+            //for(int i = 0; i < bits.length; ++i)
+            //    System.out.println(bits[i]);
             
-            if(bits.length > 1)
+            for(int i = bits.length-1, k = 0; i >= 0; --i, ++k)
             {
-                value += Integer.parseInt(bits[1]) * 60;    // Minutes
-                
-                if(bits.length > 2)
-                    value += Integer.parseInt(bits[2]) * 3600;  // Hours
+                value += Integer.parseInt(bits[i]) * Math.pow(60.0, (double)k);
             }
         }
         catch(NumberFormatException e)
         {
-            value = 0;
+            value = 0.0;
         }
         
-        return value;
+        return value.intValue();
     }
     
     public String toString()

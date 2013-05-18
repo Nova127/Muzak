@@ -32,7 +32,6 @@ public class ArtistDialog extends AbstractPhasedDialog
     private ComboBox<KeyValueCombo> ui_originChoice         = new ComboBox<>();
     private ComboBox<String>        ui_foundedChoice        = new ComboBox<>();
     private TablessTextArea         ui_commentArea          = new TablessTextArea();
-    private Button                  ui_discogsButton        = getDiscogsButton();
     /* Last phase UI components: */
     private Label                   ui_typeValue            = new Label();
     private Label                   ui_nameValue            = new Label();
@@ -262,7 +261,6 @@ public class ArtistDialog extends AbstractPhasedDialog
         pane.add(new Label(res.getString("ORIGIN")), 0, 5);
         pane.add(new Label(res.getString("FOUNDED")), 0, 6);
         pane.add(new Label(res.getString("COMMENT")), 0, 7);
-        pane.add(UIUtils.hLayoutCentered(ui_discogsButton), 0, 8);
         
         pane.add(UIUtils.hLayout(15.0, bopt, aopt, oopt), 1, 0);
         pane.add(ui_nameField, 1, 1);
@@ -272,7 +270,6 @@ public class ArtistDialog extends AbstractPhasedDialog
         pane.add(ui_originChoice, 1, 5);
         pane.add(ui_foundedChoice, 1, 6);
         pane.add(ui_commentArea, 1, 7);
-        pane.add(UIUtils.getHStretcher(), 1, 8);
         
         return pane;
     }

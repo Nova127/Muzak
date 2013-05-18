@@ -327,16 +327,26 @@ public class MainControl implements DialogObserver, ViewModDelObserver
             release.setOrgYear(dialog.getOriginalYear());
             release.setDiscs(dialog.getDiscCount());
             release.setStyleKey(dialog.getStyleKey());
-            release.setRating(dialog.getRating());
             release.setComment(dialog.getComment());
+            
+            ArrayList<TrackInfoElement> tracklist = dialog.getTracklist();
+            ArrayList<KeyValueCombo> artists = dialog.getArtists();
             
             // TODO: Better exception handling would be in order.
             try
             {
                 m_model.insert(release);
                 
-                for(KeyValueCombo kvc : dialog.getArtists())
-                    m_model.associateArtistAndRelease(Long.parseLong(kvc.getKey()), release);
+                if(tracklist.isEmpty())
+                {
+                    for(KeyValueCombo kvc : artists)
+                        m_model.associateArtistAndRelease(Long.parseLong(kvc.getKey()), release);
+                }
+                else
+                {
+                    long aid = (artists.isEmpty() ? 0L : Long.parseLong(artists.get(0).getKey()));
+                    m_model.insertTracklist(new TreeSet<TrackInfoElement>(tracklist), aid, release.getID());
+                }
             }
             catch(IllegalArgumentException e)
             {

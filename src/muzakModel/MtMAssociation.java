@@ -3,6 +3,7 @@ package muzakModel;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -175,6 +176,32 @@ class MtMAssociation<Key, AssocObj> implements Serializable
             
             if(lmap.isEmpty()) // Remove empty association.
                 m_RtoL.remove(right);
+        }
+    }
+    
+    /* Removes null associations. Seeks a list of LtoR-associations by left key. Whenever AssocObj equals null,
+     * that association is removed bidirectionally.
+     * 
+     * Returns a list of keys which associated null AssocObjs.
+     */
+    public void removeNullAssociation(Key left)
+    {
+        HashMap<Key, AssocObj> rmap = m_LtoR.get(left);
+        
+        if(rmap != null)
+        {
+            ArrayList<Key> rkeys = new ArrayList<>();
+            
+            for(Map.Entry<Key, AssocObj> entry : rmap.entrySet())
+            {
+                if(entry.getValue() == null)
+                {
+                    rkeys.add(entry.getKey());
+                }
+            }
+            
+            for(Key rk : rkeys)
+                dissociate(left, rk);
         }
     }
     
